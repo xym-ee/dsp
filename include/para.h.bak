@@ -1,0 +1,261 @@
+#ifndef PARA_H
+#define PARA_H
+
+
+extern unsigned long int msgh,msgl;
+extern unsigned long int msgh_tx, msgl_tx,msg_tx_temp;
+extern unsigned long int msgh_updata,msgl_updata,msg_updata_temp;
+
+
+extern unsigned int can_ctrl;
+
+extern unsigned int AutoUpdata;
+extern unsigned int usCNT;
+
+extern unsigned int motornum,RUN_MODE;
+extern unsigned int CURRENT_CNT;
+extern unsigned int LED_CNT;
+
+extern unsigned int DosCNT;
+extern unsigned int LosCNT;
+extern unsigned int PLLCNT;
+extern unsigned int SwitchCNT;
+
+
+
+extern float u_c_offset;
+extern float v_c_offset;
+extern float bus_v_offset;
+
+
+extern 	unsigned int FPGA_ID;
+extern  unsigned int PowerState;
+extern  unsigned int PowerUpCNT;
+extern  unsigned int PowerDownCNT;
+
+
+
+
+extern Uint16 RamfuncsLoadStart;
+extern Uint16 RamfuncsLoadEnd;
+extern Uint16 RamfuncsRunStart;
+
+extern int DAC_View;
+
+
+
+/***************position loop***********************/
+
+
+extern int Position_Cycle,Position_Cycle_DIR,Position_Start_Point,Position_Relative,Position_Delta;
+extern int Position_Out, Position_Speed_LIMIT;
+extern float Position_Kp, Position_Kp_Set,Position_Ki,Position_Ki_Set;
+extern int Position_Error,Position_Error_Set;
+
+
+
+/*************currentloop**********************/
+extern unsigned int MotorSpeedCNT;
+extern float Motor_speed_sum;
+
+
+
+
+extern float Motor_rdc;
+extern unsigned int Motor_rdc_err;
+
+
+extern unsigned int spd_rec_cnt;
+extern float   spd_rec[10];
+extern float   final_spd;
+extern float   final_spd_last;
+extern float   final_spd_fil;
+extern float   spd_val[20];
+
+
+extern float   Voltage_bus_fil;
+extern float   Voltage_bus_last;
+
+
+
+extern unsigned int   ERROR_State_temp;
+
+
+extern float Analog_cm;
+extern float Analog_cm_1;
+extern int   Analog_cm_read;
+
+
+extern unsigned int Motor_rdc_correct_flag;
+extern float Motor_rdc_zero,Motor_rdc_angle,Motor_rdc_angle_last,Delta_Motor_rdc_angle,Motor_Mposition,Motor_Eposition;
+extern int Motor_rdc_sign,Motor_pair_poles;
+
+
+
+
+/*************speed loop**********************/
+
+extern unsigned int SinTestFlag;
+extern float SinFreq;
+extern unsigned int sin_p_time_cnt;
+
+extern int   Position_counter;
+extern float Speed_cmd,Speed_cmd_set;
+extern int   Cycle_DIR;
+extern float Speed_cmd_fil,Speed_motor,Speed_error;
+extern float Speed_Kp,Speed_Ki,Speed_Kp_Set,Speed_Ki_Set;
+extern float Speed_error_I,Speed_ctrl_P,Speed_ctrl_I,Speed_ctrl,Speed_ctrl_last,Speed_ctrl_lim;
+extern float Motor_speed_fil_20ms; 
+
+extern float I_modify_index;
+extern float P_modify_index;
+
+/*************currentloop**********************/
+
+
+extern float Current_a;
+extern float Current_b;
+
+extern float Current_a_1; 
+extern float Current_b_1;
+
+
+
+extern float Sin_theta;
+extern float Cos_theta;
+extern float Current_alfa;
+extern float Current_beta;
+extern float Current_d;
+extern float Current_q;
+
+
+extern float Current_d_filter;
+extern float Current_q_filter;
+extern float Current_Is,Current_Is_SUM,Current_Is_AVR;
+
+
+extern float  Currentd_error_sum,Currentq_error_sum;
+extern float  Currentd_error_avr,Currentq_error_avr;
+extern unsigned int Current_error_cnt;
+extern unsigned int Current_error_flag;
+extern unsigned int Current_OL_flag;
+extern unsigned int Current_OL_cnt;
+
+
+extern float Current_cmd,Current_cmd_set,Current_cmd_filter;
+extern float Currentd_cmd,Currentq_cmd;
+extern float Currentd_max,Currentq_max;
+extern float Currentd_error,Currentq_error;
+extern float Currentd_ctrl_P,Currentq_ctrl_P;
+extern float Currentd_error_I,Currentq_error_I;
+extern float Currentd_Kp,Currentq_Kp;
+extern float Currentd_ctrl_I,Currentq_ctrl_I;
+extern float Currentd_Ki,Currentq_Ki;
+extern float Currentd_ctrl,Currentq_ctrl;
+extern float Current_alfa_ctrl,Current_beta_ctrl;
+extern float Current_a_ctrl,Current_b_ctrl,Current_c_ctrl;
+extern float pwmout_a,pwmout_b,pwmout_c,pwmout_max;
+extern float cur_zero_drift;
+extern int pwmcmp_a,pwmcmp_b,pwmcmp_c;
+extern long int p_time_cnt;
+
+
+
+extern int data_id;
+extern unsigned int pc_command_id;
+extern unsigned int motor_id;
+extern int Soft_EN;
+
+
+
+
+extern float SPEED_STEP,SPEED_LIMIT,CURRENT_LIMIT;
+
+extern float Position_Cycle_Window;
+
+extern int  E2PROM_START;
+
+extern unsigned int Error_state_low,Error_state_high;
+extern unsigned int Error_state_send;
+
+
+extern unsigned int  CAN_LOST_CNT;
+extern unsigned int  ERROR_State_temp;
+extern unsigned int  CAN_LOST_CNT;
+extern unsigned int  MOTOR_OVERHEAT_CNT;
+extern unsigned int  CURRQ_CHAOCHA_CNT;
+extern unsigned int  CURRD_CHAOCHA_CNT;
+extern unsigned int  SPD_CHAOCHA_CNT;
+extern unsigned int  OVER_LOAD_CNT;
+
+
+
+extern float PWM_set;
+
+extern unsigned int  Mask_Flag;
+
+
+extern unsigned int HistoryErr;
+
+
+/************************************ RESOLVER  ****************************/
+extern long int SINE_TABLE[16];
+extern float FIR_COEFF[17];
+extern float offsetFc,offsetWfT;
+
+// control loop parameters 
+extern float  errorFc,    // error filter corner freq (in rad/sec)
+       Kp,         // pi controller P gain
+       piconFz;    // PI controller zero
+
+extern long int  testCntr,testCntMax;   
+
+extern float  testAngleMax;   // max test angle for ref gen
+
+extern long int //resMag20,                     // resolver magnitude in Q20
+      resetAll  ,                 // reset all error flags
+      resMagMax ,        // resolver magnitude max value
+      resMagMin ,         // resolver magnitude min value
+      DOS_ERROR ,                // degradation of signal (DOS) - error flag
+      LOS_ERROR ,                // loss of signal (LOS) - error flag
+      PLL_ERROR ,                // PLL loop error flag
+      dos,                          // degradation of signal (DOS)
+      dosLimit  ,          // Limit value of DOS
+      losLimit  ,          // Limit value of LOS
+      skipLosCnt,              // cnt value for los validation
+      skipLosPrd,            // Prd value for los validation
+      angleErrMax;       // Limit value of PLL loop error
+
+
+extern unsigned int ReslvoReadyFlag;
+/*******************************************************************************/
+
+
+/********************************* DSP  AD  SAMPLE****************************/
+extern unsigned int  SampleSumCNT;
+extern unsigned int  UcurentSamp[15]; 
+extern unsigned int  VcurentSamp[15]; 
+extern unsigned int  BusVolSamp[15];
+extern unsigned int  IpmTempSamp[15];
+extern unsigned int  AcommSamp[15];
+extern unsigned int  MotorTempSamp[15];
+
+extern float  UcurentOS; 
+extern float  VcurentOS; 
+extern float  BusVolOS;
+extern float  IpmTempOS;
+extern float  AcommOS;
+extern float  MotorTempOS;
+
+extern float  OffsetS_CHK;
+extern float  OffsetC_CHK;
+extern float  OffsetU_CHK;
+extern float  OffsetV_CHK;
+
+
+
+#endif
+
+
+
+

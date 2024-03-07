@@ -1,0 +1,51 @@
+; Code Composer Project File, Version 2.0 (do not modify or remove this line)
+
+[Project Settings]
+ProjectDir="E:\F28335PROG\152Simple\FrameWork_20200325\"
+ProjectType=Executable
+CPUFamily=TMS320C28XX
+Tool="Compiler"
+Tool="CustomBuilder"
+Tool="DspBiosBuilder"
+Tool="Linker"
+Config="Debug"
+Config="Release"
+
+[Source Files]
+Source="can.c"
+Source="Code_Start.asm"
+Source="Current.c"
+Source="E2PROM.c"
+Source="F28335_REGS.c"
+Source="Handle.c"
+Source="Initial.c"
+Source="Main.c"
+Source="Other.c"
+Source="Para.c"
+Source="DSP2833x_Headers_nonBIOS.cmd"
+Source="F28335.cmd"
+
+["Compiler" Settings: "Debug"]
+Options=-g -pdr -float_support=fpu32 -fr"$(Proj_dir)\Debug" -i".\include" -d"_DEBUG" -d"LARGE_MODEL" -ml -mt -v28 --float_support=fpu32
+
+["Compiler" Settings: "Release"]
+Options=-pdsw225 -o3 -fr"$(Proj_dir)\Release" -d"LARGE_MODEL" -ml -v28
+
+["Linker" Settings: "Debug"]
+Options=-q -c -ecode_start -m".\Debug\28335servo.map" -o".\Debug\28335servo.out" -stack0x380 -w -x -i".\include\" -l"rts2800_fpu32_fast_supplement.lib" -l"rts2800_fpu32.lib" -l"Resolver_Lib_Float.lib" -l"IQmath.lib"
+
+["Linker" Settings: "Release"]
+Options=-c -m".\Release\Dmotor0120.map" -o".\Release\Dmotor0120.out" -w -x
+
+["DSP2833x_Headers_nonBIOS.cmd" Settings: "Debug"]
+LinkOrder=2
+
+["DSP2833x_Headers_nonBIOS.cmd" Settings: "Release"]
+LinkOrder=1
+
+["F28335.cmd" Settings: "Debug"]
+LinkOrder=1
+
+["F28335.cmd" Settings: "Release"]
+LinkOrder=1
+

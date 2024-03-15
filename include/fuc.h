@@ -27,16 +27,9 @@ extern void InitCpuTimers(void);
 extern void ConfigCpuTimer(struct CPUTIMER_VARS *Timer, float Freq, float Period);
 extern void EN_INT(void);
 extern void DIS_INT(void);
-interrupt void current_isr(void); 
-extern void InitEPwm1(void);
-extern void InitEPwm2(void);
-extern void InitEPwm3(void);
-extern void InitEPwm4(void);
-extern void InitEPwm5(void);
-extern void InitEPwm6(void);
+interrupt void current_isr(void);
 
 extern void Initial_PWM(void);
-
 
 extern void Initial_CAN(void);
 extern void Initial_CANa(void);
@@ -50,9 +43,7 @@ extern void CAN_MSG_MERGE(unsigned int id,unsigned int code,unsigned int data,un
 extern void PARA_SET_UPDATA(void);
 
 
-
 extern void MemCopy(Uint16 *SourceAddr, Uint16* SourceEndAddr, Uint16* DestAddr);
-
 
 
 extern void I2CA_WriteData(unsigned char addr,unsigned char dat);
@@ -62,10 +53,7 @@ extern unsigned int I2C_Read(unsigned char addr);
 extern void E2PROM(void);
 extern void AD_OFFSET_CAL(void);
 
-
 interrupt void ad_sample_isr(void);
-
-
 
 
 extern void OPEN_EN(void);

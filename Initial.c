@@ -1,48 +1,403 @@
 #include "head.h"
+
 #pragma CODE_SECTION(InitFlash,"ramfuncs");
+
+void InitSysCtrl(void)
+{
+    // Disable the watchdog
+   DisableDog();
+
+   // Initialize the PLL control: PLLCR and DIVSEL
+   // DSP28_PLLCR and DSP28_DIVSEL are defined in DSP2833x_Examples.h
+   InitPll(PLLMUL,PLLDIV);
+
+   // Initialize the peripheral clocks
+   InitPeripheralClocks();
+}
+
+void Initial_Gpio(void)//(“—∏ƒ)
+{
+    EALLOW;
+
+    //GPIO7,10,17,52,53,58-61Œ¥ π”√
+
+    //GPIO0-GPIO5…Ë÷√Œ™¡˘¬∑PWM ‰≥ˆ
+    GpioCtrlRegs.GPAPUD.bit.GPIO0 = 0;    // Enable pull-up on GPIO0 (EPWM1A)
+    GpioCtrlRegs.GPAPUD.bit.GPIO1 = 0;    // Enable pull-up on GPIO1 (EPWM1B)   
+
+    GpioCtrlRegs.GPAMUX1.bit.GPIO0 = 1;   // Configure GPIO0 as EPWM1A
+    GpioCtrlRegs.GPAMUX1.bit.GPIO1 = 1;   // Configure GPIO1 as EPWM1B
+
+    GpioCtrlRegs.GPAPUD.bit.GPIO2 = 0;    // Enable pull-up on GPIO2 (EPWM2A)
+    GpioCtrlRegs.GPAPUD.bit.GPIO3 = 0;    // Enable pull-up on GPIO3 (EPWM3B)
+
+    GpioCtrlRegs.GPAMUX1.bit.GPIO2 = 1;   // Configure GPIO2 as EPWM2A
+    GpioCtrlRegs.GPAMUX1.bit.GPIO3 = 1;   // Configure GPIO3 as EPWM2B
+
+    GpioCtrlRegs.GPAPUD.bit.GPIO4 = 0;    // Enable pull-up on GPIO4 (EPWM3A)
+    GpioCtrlRegs.GPAPUD.bit.GPIO5 = 0;    // Enable pull-up on GPIO5 (EPWM3B)
+
+    GpioCtrlRegs.GPAMUX1.bit.GPIO4 = 1;   // Configure GPIO4 as EPWM3A
+    GpioCtrlRegs.GPAMUX1.bit.GPIO5 = 1;   // Configure GPIO5 as EPWM3B
+
+    GpioCtrlRegs.GPAPUD.bit.GPIO6 = 1;    // DIS pull-up on GPIO6 (EPWM4A)
+    GpioCtrlRegs.GPAPUD.bit.GPIO7 = 1;    // DIS pull-up on GPIO7 (EPWM4B)
+
+    GpioCtrlRegs.GPAMUX1.bit.GPIO6 = 1;   // Configure GPIO6 as EPWM4A
+
+    GpioCtrlRegs.GPAMUX1.bit.GPIO7 = 0;   // Configure GPIO7 as GPIO
+    GpioCtrlRegs.GPADIR.bit.GPIO7  = 1;
+    GpioDataRegs.GPADAT.bit.GPIO7 = 0;
+
+    GpioCtrlRegs.GPAPUD.bit.GPIO8 = 1;    // DIS pull-up on GPIO8 (EPWM5A)
+    GpioCtrlRegs.GPAPUD.bit.GPIO9 = 1;    // DIS pull-up on GPIO9 (EPWM5B)
+
+    GpioCtrlRegs.GPAMUX1.bit.GPIO8 = 1;   // Configure GPIO8 as EPWM5A
+    GpioCtrlRegs.GPAMUX1.bit.GPIO9 = 1;   // Configure GPIO9 as EPWM5B
+
+    GpioCtrlRegs.GPAPUD.bit.GPIO10 = 1;    // DIS pull-up on GPIO10 (EPWM6A)
+    GpioCtrlRegs.GPAPUD.bit.GPIO11 = 1;    // DIS pull-up on GPIO11 (EPWM6B)
+
+    GpioCtrlRegs.GPAMUX1.bit.GPIO10 = 1;   // Configure GPIO10 as EPWM6A
+    GpioCtrlRegs.GPAMUX1.bit.GPIO11 = 1;   // Configure GPIO11 as EPWM6B
+
+
+
+//  GPIO12~GPIO13  Œ¥ π”√ 
+
+
+    //GPIO14∫ÕGPIO15…Ë÷√…XHOLD∫ÕXHOLDA	
+    GpioCtrlRegs.GPAMUX1.bit.GPIO14 = 1;     //XHOLD
+    GpioCtrlRegs.GPAMUX1.bit.GPIO15 = 1;     //XHOLDA 
+
+//GPIO16 GPIO17Œ¥ π”√   
+
+    //GPIO18∫ÕGPIO19…Ë÷√≥…CANRXA∫ÕCANTXA
+
+    GpioCtrlRegs.GPAPUD.bit.GPIO18 = 0;     //Enable pullup on
+    GpioCtrlRegs.GPAPUD.bit.GPIO19 = 0;     //Enable pullup on
+
+    GpioCtrlRegs.GPAQSEL2.bit.GPIO18 = 3;   // ‰»Î“Ï≤Ω£¨”√”⁄SCI£¨SPI£¨eCAN£¨I2C 
+    GpioCtrlRegs.GPAMUX2.bit.GPIO18 = 3;     //CANRXA
+    GpioCtrlRegs.GPAMUX2.bit.GPIO19 = 3;     //CANTXA  
+
+
+//GPIO20 ~ GPIO27Œ¥ π”√ 
+
+    //GPIO32-GPIO33≈‰÷√SDAA∫ÕSCLA
+    GpioCtrlRegs.GPBPUD.bit.GPIO32 = 0;   // Enable pullup on GPIO32
+    GpioCtrlRegs.GPBMUX1.bit.GPIO32 = 1;  // GPIO32 = SDAA
+    GpioCtrlRegs.GPBQSEL1.bit.GPIO33 = 3; //  ‰»Î“Ï≤Ω£¨”√”⁄SCI£¨SPI£¨eCAN£¨I2C
+    GpioCtrlRegs.GPBPUD.bit.GPIO33 = 0;   // Enable pullup on GPIO33
+    GpioCtrlRegs.GPBQSEL1.bit.GPIO33 = 3; //  ‰»Î“Ï≤Ω£¨”√”⁄SCI£¨SPI£¨eCAN£¨I2C
+    GpioCtrlRegs.GPBMUX1.bit.GPIO33 = 1;  // GPIO33 = SCLA
+
+
+    //  GPIO48 Œ¥ π”√
+
+    GpioCtrlRegs.GPBPUD.bit.GPIO49  = 0;                      // test port
+    GpioCtrlRegs.GPBMUX2.bit.GPIO49 = 0;
+    GpioCtrlRegs.GPBDIR.bit.GPIO49  = 1;
+    GpioDataRegs.GPBDAT.bit.GPIO49  = 0;
+    
+      
+    GpioCtrlRegs.GPBPUD.bit.GPIO51  = 1;                      // CAP 
+    GpioCtrlRegs.GPBMUX2.bit.GPIO51 = 0;
+    GpioCtrlRegs.GPBDIR.bit.GPIO51  = 1;
+    GpioDataRegs.GPBDAT.bit.GPIO51  = 0;
+
+
+    GpioCtrlRegs.GPBPUD.bit.GPIO52 = 0;   //Enalbe pullup        LED0
+    GpioCtrlRegs.GPBMUX2.bit.GPIO52 = 0;  //GPIO
+    GpioCtrlRegs.GPBDIR.bit.GPIO52 = 1;   //GPIO = output
+    GpioDataRegs.GPBCLEAR.bit.GPIO52 = 1;
+
+
+    GpioCtrlRegs.GPBPUD.bit.GPIO53 = 0;   //Enalbe pullup       LED1
+    GpioCtrlRegs.GPBMUX2.bit.GPIO53 = 0;  //GPIO
+    GpioCtrlRegs.GPBDIR.bit.GPIO53 = 1;   //GPIO = output
+    GpioDataRegs.GPBCLEAR.bit.GPIO53 = 1;
+
+    GpioCtrlRegs.GPBPUD.bit.GPIO54 = 0;   //Enalbe pullup       EN
+    GpioCtrlRegs.GPBMUX2.bit.GPIO54 = 0;  //GPIO
+    GpioCtrlRegs.GPBDIR.bit.GPIO54 = 1;   //GPIO = output
+    GpioDataRegs.GPBDAT.bit.GPIO54 = 1;
+
+    GpioCtrlRegs.GPBPUD.bit.GPIO55 = 0;   //Enalbe pullup       FPGA_RST
+    GpioCtrlRegs.GPBMUX2.bit.GPIO55 = 0;  //GPIO
+    GpioCtrlRegs.GPBDIR.bit.GPIO55 = 1;   //GPIO = output
+    GpioDataRegs.GPBDAT.bit.GPIO55 = 1;
+
+    GpioCtrlRegs.GPBPUD.bit.GPIO56 = 0;   //Enalbe pullup       BOX_LED
+    GpioCtrlRegs.GPBMUX2.bit.GPIO56 = 0;  //GPIO
+    GpioCtrlRegs.GPBDIR.bit.GPIO56 = 1;   //GPIO = output
+    GpioDataRegs.GPBDAT.bit.GPIO56 = 1;
+
+// GPIO57--GPIO63 Œ¥ π”√
+
+
+//GPIO28-GPIO31,GPIO34-GPIO47,GPIO64-GPIO87≈‰÷√Õ‚≤øΩ”ø⁄£®XINTF£©
+
+    GpioCtrlRegs.GPCMUX1.bit.GPIO64 = 3;  // XD15
+    GpioCtrlRegs.GPCMUX1.bit.GPIO65 = 3;  // XD14
+    GpioCtrlRegs.GPCMUX1.bit.GPIO66 = 3;  // XD13
+    GpioCtrlRegs.GPCMUX1.bit.GPIO67 = 3;  // XD12
+    GpioCtrlRegs.GPCMUX1.bit.GPIO68 = 3;  // XD11
+    GpioCtrlRegs.GPCMUX1.bit.GPIO69 = 3;  // XD10
+    GpioCtrlRegs.GPCMUX1.bit.GPIO70 = 3;  // XD19
+    GpioCtrlRegs.GPCMUX1.bit.GPIO71 = 3;  // XD8
+    GpioCtrlRegs.GPCMUX1.bit.GPIO72 = 3;  // XD7
+    GpioCtrlRegs.GPCMUX1.bit.GPIO73 = 3;  // XD6
+    GpioCtrlRegs.GPCMUX1.bit.GPIO74 = 3;  // XD5
+    GpioCtrlRegs.GPCMUX1.bit.GPIO75 = 3;  // XD4
+    GpioCtrlRegs.GPCMUX1.bit.GPIO76 = 3;  // XD3
+    GpioCtrlRegs.GPCMUX1.bit.GPIO77 = 3;  // XD2
+    GpioCtrlRegs.GPCMUX1.bit.GPIO78 = 3;  // XD1
+    GpioCtrlRegs.GPCMUX1.bit.GPIO79 = 3;  // XD0
+
+    GpioCtrlRegs.GPBMUX1.bit.GPIO40 = 3;  // XA0/XWE1n
+    GpioCtrlRegs.GPBMUX1.bit.GPIO41 = 3;  // XA1
+    GpioCtrlRegs.GPBMUX1.bit.GPIO42 = 3;  // XA2
+    GpioCtrlRegs.GPBMUX1.bit.GPIO43 = 3;  // XA3
+    GpioCtrlRegs.GPBMUX1.bit.GPIO44 = 3;  // XA4
+    GpioCtrlRegs.GPBMUX1.bit.GPIO45 = 3;  // XA5
+    GpioCtrlRegs.GPBMUX1.bit.GPIO46 = 3;  // XA6
+    GpioCtrlRegs.GPBMUX1.bit.GPIO47 = 3;  // XA7
+
+     /*
+
+     GpioCtrlRegs.GPCMUX2.bit.GPIO80 = 3;  // XA8
+     GpioCtrlRegs.GPCMUX2.bit.GPIO81 = 3;  // XA9
+     GpioCtrlRegs.GPCMUX2.bit.GPIO82 = 3;  // XA10
+     GpioCtrlRegs.GPCMUX2.bit.GPIO83 = 3;  // XA11
+     GpioCtrlRegs.GPCMUX2.bit.GPIO84 = 3;  // XA12
+     GpioCtrlRegs.GPCMUX2.bit.GPIO85 = 3;  // XA13
+     GpioCtrlRegs.GPCMUX2.bit.GPIO86 = 3;  // XA14
+     GpioCtrlRegs.GPCMUX2.bit.GPIO87 = 3;  // XA15
+
+     GpioCtrlRegs.GPBMUX1.bit.GPIO39 = 3;  // XA16
+     GpioCtrlRegs.GPAMUX2.bit.GPIO31 = 3;  // XA17
+     GpioCtrlRegs.GPAMUX2.bit.GPIO30 = 3;  // XA18
+     GpioCtrlRegs.GPAMUX2.bit.GPIO29 = 3;  // XA19
+
+     */
+
+     GpioCtrlRegs.GPBMUX1.bit.GPIO34 = 3;  // XREADY
+     GpioCtrlRegs.GPBMUX1.bit.GPIO35 = 3;  // XRNW
+     GpioCtrlRegs.GPBMUX1.bit.GPIO38 = 3;  // XWE0
+
+     GpioCtrlRegs.GPBMUX1.bit.GPIO36 = 3;  // XZCS0
+ //    GpioCtrlRegs.GPBMUX1.bit.GPIO37 = 3;  // XZCS7
+ //    GpioCtrlRegs.GPAMUX2.bit.GPIO28 = 3;  // XZCS6
+
+     EDIS;
+}
+
+
+void Initial_INT(void)
+{
+    DINT;        //Disable interrupt
+
+    InitPieCtrl();
+    IER = 0x0000;
+    IFR = 0x0000;
+    PieCtrlRegs.PIECTRL.bit.ENPIE = 1;// PIE_TABLE ENABLE
+    EALLOW;  // This is needed to write to EALLOW protected registers
+    PieVectTable.EPWM6_INT = &current_isr; 
+    PieVectTable.ADCINT    = &ad_sample_isr;   
+    EDIS;
+}
+
+
+
+void InitFlash(void)
+{
+    EALLOW;
+    //Enable Flash Pipeline mode to improve performance
+    //of code executed from Flash.
+    FlashRegs.FOPT.bit.ENPIPE = 1;   // πƒ‹FLASH¡˜ÀÆœﬂƒ£ Ω
+
+    //                CAUTION
+    //Minimum waitstates required for the flash operating
+    //at a given CPU rate must be characterized by TI.
+    //Refer to the datasheet for the latest information.
+    //#if CPU_FRQ_150MHZ
+    //Set the Paged Waitstate for the Flash
+    FlashRegs.FBANKWAIT.bit.PAGEWAIT = 5;
+
+    //Set the Random Waitstate for the Flash
+    FlashRegs.FBANKWAIT.bit.RANDWAIT = 5;
+
+    //Set the Waitstate for the OTP
+    FlashRegs.FOTPWAIT.bit.OTPWAIT = 8;
+    //#endif
+
+    //#if CPU_FRQ_100MHZ
+    //Set the Paged Waitstate for the Flash
+    // FlashRegs.FBANKWAIT.bit.PAGEWAIT = 3;
+
+    //Set the Random Waitstate for the Flash
+    //  FlashRegs.FBANKWAIT.bit.RANDWAIT = 3;
+
+    //Set the Waitstate for the OTP
+    //  FlashRegs.FOTPWAIT.bit.OTPWAIT = 5;
+    //#endif
+    //                CAUTION
+    //ONLY THE DEFAULT VALUE FOR THESE 2 REGISTERS SHOULD BE USED
+    FlashRegs.FSTDBYWAIT.bit.STDBYWAIT = 0x01FF;    //¥”ÀØ√ﬂµΩ±∏”√Ã¨µ»¥˝511∏ˆ÷‹∆⁄
+    FlashRegs.FACTIVEWAIT.bit.ACTIVEWAIT = 0x01FF;    //¥”±∏”√µΩº§ªÓÃ¨µ»¥˝511∏ˆ÷‹∆⁄
+    EDIS;
+
+    //Force a pipeline flush to ensure that the write to
+    //the last register configured occurs before returning.
+
+    asm(" RPT #7 || NOP");
+}
+
+
+
+void InitXintf(void)
+{
+    // This shows how to write to the XINTF registers.  The
+    // values used here are the default state after reset.
+    // Different hardware will require a different configuration.
+
+    // For an example of an XINTF configuration used with the
+    // F28335 eZdsp, refer to the examples/run_from_xintf project.
+
+    // Any changes to XINTF timing should only be made by code
+    // running outside of the XINTF.
+
+    // All Zones---------------------------------
+    // Timing for all zones based on XTIMCLK = 1/2 SYSCLKOUT
+    EALLOW;
+    XintfRegs.XINTCNF2.bit.XTIMCLK = 1;//≈‰÷√ºƒ¥Ê∆˜  XTIMCLK = 1/2 SYSCLKOUT
+
+    XintfRegs.XINTCNF2.bit.WRBUFF = 0;//0∏ˆ–¥ª∫≥Â…Ó∂»£¨ø…≈‰÷√Œ™0-3
+
+    XintfRegs.XINTCNF2.bit.CLKOFF = 0;// πƒ‹XCLKOUT
+
+    XintfRegs.XINTCNF2.bit.CLKMODE = 1;// XCLKOUT = XTIMCLK/2
+
+
+    // Zone 0------------------------------------
+    // When using ready, ACTIVE must be 1 or greater
+    // Lead must always be 1 or greater
+
+    XintfRegs.XTIMING0.bit.XWRLEAD = 3;//–¥∑√Œ Ω®¡¢µ»¥˝3∏ˆXTIMCLK÷‹∆⁄
+    XintfRegs.XTIMING0.bit.XWRACTIVE = 4;//–¥∑√Œ º§ªÓµ»¥˝4∏ˆXTIMCLK÷‹∆⁄
+    XintfRegs.XTIMING0.bit.XWRTRAIL = 3;//–¥∑√Œ ∏˙◊Ÿµ»¥˝3∏ˆXTIMCLK÷‹∆⁄
+
+    XintfRegs.XTIMING0.bit.XRDLEAD = 3;//∂¡∑√Œ Ω®¡¢µ»¥˝3∏ˆXTIMCLK÷‹∆⁄
+    XintfRegs.XTIMING0.bit.XRDACTIVE = 4;//¡∑√Œ º§ªÓµ»¥4∏ˆXTIMCLK÷‹∆⁄
+    XintfRegs.XTIMING0.bit.XRDTRAIL = 3;//∂¡∑√Œ ∏˙◊Ÿµ»¥˝3∏ˆXTIMCLK÷‹∆⁄
+
+    XintfRegs.XTIMING0.bit.X2TIMING = 0;//0/1:“ª/¡Ω±∂Ω®¡¢°¢º§ªÓ∫Õ∏˙◊Ÿµƒ ±º‰
+
+    XintfRegs.XTIMING0.bit.USEREADY = 1;//≤…—˘XREADY–≈∫≈ 
+    XintfRegs.XTIMING0.bit.READYMODE = 1;  // XREADY–≈∫≈“Ï≤Ω≤…—˘∑Ω Ω
+
+    XintfRegs.XTIMING0.bit.XSIZE = 3;//16Œª ˝æ›œﬂ£¨1±Ì æ32Œª?æ›œﬂ
+
+    // Zone 6------------------------------------
+    // When using ready, ACTIVE must be 1 or greater
+    // Lead must always be 1 or greater
+
+    XintfRegs.XTIMING6.bit.XWRLEAD = 3;
+    XintfRegs.XTIMING6.bit.XWRACTIVE = 4;
+    XintfRegs.XTIMING6.bit.XWRTRAIL = 3;
+
+    XintfRegs.XTIMING6.bit.XRDLEAD = 3;
+    XintfRegs.XTIMING6.bit.XRDACTIVE = 4;
+    XintfRegs.XTIMING6.bit.XRDTRAIL = 3;
+
+    XintfRegs.XTIMING6.bit.X2TIMING = 0;
+
+    XintfRegs.XTIMING6.bit.USEREADY = 1;
+    XintfRegs.XTIMING6.bit.READYMODE = 1; 
+
+    XintfRegs.XTIMING6.bit.XSIZE = 3;
+
+    // Zone 7------------------------------------
+    // When using ready, ACTIVE must be 1 or greater
+    // Lead must always be 1 or greater
+
+    XintfRegs.XTIMING7.bit.XWRLEAD = 3;
+    XintfRegs.XTIMING7.bit.XWRACTIVE = 4;
+    XintfRegs.XTIMING7.bit.XWRTRAIL = 3;
+
+    XintfRegs.XTIMING7.bit.XRDLEAD = 3;
+    XintfRegs.XTIMING7.bit.XRDACTIVE = 4;
+    XintfRegs.XTIMING7.bit.XRDTRAIL = 3;
+
+    XintfRegs.XTIMING7.bit.X2TIMING = 0;
+
+    XintfRegs.XTIMING7.bit.USEREADY = 1;
+    XintfRegs.XTIMING7.bit.READYMODE = 1; 
+
+    XintfRegs.XTIMING7.bit.XSIZE = 3;
+
+    // Bank switching
+    // Assume Zone 7 is slow, so add additional BCYC cycles
+    // when ever switching from Zone 6 to another Zone.
+    // This will help avoid bus contention.
+    // Bank switching
+    // Assume Zone 6 is slow, so add additional BCYC cycles
+    // when ever switching from Zone 6 to another Zone.
+    // This will help avoid bus contention.
+    // XintfRegs.XBANK.bit.BANK = 6;// πƒ‹¥Ê¥¢∆˜«¯”Ú«–ªªπ¶ƒ‹
+    // XintfRegs.XBANK.bit.BCYC = 7;//¡¨–¯∑√Œ ≤Ÿ◊˜ ±÷–º‰µ»¥˝6∏ˆXTIMCLK÷‹∆⁄
+    // XintfRegs.XBANK.bit.BANK = 7;
+    //    XintfRegs.XBANK.bit.BCYC = 7;
+    EDIS;
+    //Force a pipeline flush to ensure that the write to
+    //the last register configured occurs before returning.
+
+    asm(" RPT #7 || NOP");
+
+}
+
+
 
 
 
 void initial_para_self(void)
 {
+     CURRENT_CNT = 0;
+     
+     /////////////////////////////////////////////
 
-
-	 CURRENT_CNT = 0;
-	 
-
-	 /////////////////////////////////////////////
-
-	 SinTestFlag = 0;
- 	 SinFreq=0;	 
+     SinTestFlag = 0;
+      SinFreq=0;	 
 
 //	 Motor_rdc_angle = 0.0;
-	 Motor_Mposition = 0.0;
-	 Motor_Eposition = 0.0;
+     Motor_Mposition = 0.0;
+     Motor_Eposition = 0.0;
 
-	 /****************Position loop ****************/
+     /****************Position loop ****************/
 
-	 Position_counter = 0;
+     Position_counter = 0;
 
-	 Position_Cycle= 0 ;
+     Position_Cycle= 0 ;
 
 
-	 Position_Start_Point=0;
-	 Position_Relative = 0;
-	 Position_Delta = 0;
-	 Position_Out = 0;
-	 Position_Kp =0.0;
-	 Position_Ki = 0.0;
-	 Position_Error = 0;
-	 
-	 
+     Position_Start_Point=0;
+     Position_Relative = 0;
+     Position_Delta = 0;
+     Position_Out = 0;
+     Position_Kp =0.0;
+     Position_Ki = 0.0;
+     Position_Error = 0;
+     
+     
 
     /*************** speed loop ************/	 
      
      Position_counter = 0;
 
-	 Speed_cmd = 0;
-	 Speed_cmd_set = 0;
-	 Speed_cmd_fil = 0.0;
+     Speed_cmd = 0;
+     Speed_cmd_set = 0;
+     Speed_cmd_fil = 0.0;
      Speed_motor = 0.0;
      Speed_error = 0.0;
      Speed_Kp = 0.0;
@@ -51,26 +406,26 @@ void initial_para_self(void)
      Speed_ctrl_P = 0.0;
      Speed_ctrl_I = 0.0;
      Speed_ctrl = 0.0;
-	 Speed_ctrl_last = 0.0;
+     Speed_ctrl_last = 0.0;
 
 
 
-	 /***************current loop************/
-	 Current_cmd = 0.0;
-	 Current_cmd_set = 0.0;
-	 Current_cmd_filter = 0.0;
-	
+     /***************current loop************/
+     Current_cmd = 0.0;
+     Current_cmd_set = 0.0;
+     Current_cmd_filter = 0.0;
+    
 
-	 Currentd_cmd = 0.0;
-	 Currentq_cmd = 0.0;
-	 Currentd_max = 0.248;
-	 Currentq_max = 0.9688;
-	 Currentd_error = 0.0;
-	 Currentq_error = 0.0;
+     Currentd_cmd = 0.0;
+     Currentq_cmd = 0.0;
+     Currentd_max = 0.248;
+     Currentq_max = 0.9688;
+     Currentd_error = 0.0;
+     Currentq_error = 0.0;
      Currentd_ctrl_P = 0.0;
      Currentq_ctrl_P = 0.0;
-	 Currentd_error_I = 0.0;
-	 Currentq_error_I = 0.0;
+     Currentd_error_I = 0.0;
+     Currentq_error_I = 0.0;
 
    
      
@@ -79,55 +434,42 @@ void initial_para_self(void)
      
 
 
-	 Currentd_ctrl = 0.0;
-	 Currentq_ctrl = 0.0;
-	 Current_alfa_ctrl = 0.0;
-	 Current_beta_ctrl = 0.0;
-	 Current_a_ctrl = 0.0;
-	 Current_b_ctrl = 0.0;
-	 Current_c_ctrl = 0.0;
+     Currentd_ctrl = 0.0;
+     Currentq_ctrl = 0.0;
+     Current_alfa_ctrl = 0.0;
+     Current_beta_ctrl = 0.0;
+     Current_a_ctrl = 0.0;
+     Current_b_ctrl = 0.0;
+     Current_c_ctrl = 0.0;
      pwmout_a = 0.0;
      pwmout_b = 0.0;
      pwmout_c = 0.0;
-	 
-	 sin_p_time_cnt = 0;
-	 p_time_cnt = 0;
+     
+     sin_p_time_cnt = 0;
+     p_time_cnt = 0;
 
+     data_id = 0xffff;
+     pc_command_id = 0xffff;
 
-
-	 data_id = 0xffff;
-	 pc_command_id = 0xffff;
-
-
-
-
-
-	 Currentd_error_sum=0;
+     Currentd_error_sum=0;
      Currentq_error_sum=0;
      Currentd_error_avr=0;
      Currentq_error_avr=0;
      Current_error_cnt=0;
-	 Current_error_flag=0;
+     Current_error_flag=0;
 
-	 CAN_LOST_CNT = 0;
-	 MOTOR_OVERHEAT_CNT = 0;
-	 CURRQ_CHAOCHA_CNT = 0;
-	 CURRD_CHAOCHA_CNT = 0;
-	 SPD_CHAOCHA_CNT = 0;
-	 OVER_LOAD_CNT = 0;
+     CAN_LOST_CNT = 0;
+     MOTOR_OVERHEAT_CNT = 0;
+     CURRQ_CHAOCHA_CNT = 0;
+     CURRD_CHAOCHA_CNT = 0;
+     SPD_CHAOCHA_CNT = 0;
+     OVER_LOAD_CNT = 0;
 
 //	 Delta_RDC=0;
 //     RDC_LAST=0;
 //     RDC_JMP_CNT=0;
 
-
-
-
      Position_Cycle_Window = Position_Speed_LIMIT * 0.04;
-	 
-
-
-
 
 }
 
@@ -156,12 +498,12 @@ void  driver_parameter(void)
                                     //  420 4520  8600 12723  JINBAO SM60  BLACK
                                    
                                     //  6439   405B  shenlan
-									
+                                    
                                    //  16236  49003     // 407  Œﬁ±ß’¢   16bit
 
-		                           //  27000   59767     // 407  ±ß’¢     16bit
+                                   //  27000   59767     // 407  ±ß’¢     16bit
 
-								   //    12276.0         // 407  Œﬁ±ß’¢   14bit
+                                   //    12276.0         // 407  Œﬁ±ß’¢   14bit
 
 
 //RDC –˝◊™∑ΩœÚ£¨»ÙRDCŒ™À≥ ±’Î£¨‘ÚŒ™-1£¨ƒÊ ±’ÎŒ™1
@@ -169,7 +511,7 @@ void  driver_parameter(void)
 
 
 
-		 Position_Speed_LIMIT = 100;
+         Position_Speed_LIMIT = 100;
 
 
 
@@ -178,30 +520,18 @@ void  driver_parameter(void)
 
 //		 Cycle_DIR = 1;             //   +1 (li)  or  -1 (shun)  
 
-		 Position_Cycle_DIR = -1;   //   +1  (li)   or  -1  (shun)	  
+         Position_Cycle_DIR = -1;   //   +1  (li)   or  -1  (shun)	  
 
 
 
-		 Position_Error_Set = 10;
+         Position_Error_Set = 10;
 
 
 
-		
+        
 }
 
-void InitSysCtrl(void)
-{
-	// Disable the watchdog
-   DisableDog();
 
-   // Initialize the PLL control: PLLCR and DIVSEL
-   // DSP28_PLLCR and DSP28_DIVSEL are defined in DSP2833x_Examples.h
-   InitPll(PLLMUL,PLLDIV);
-
-   // Initialize the peripheral clocks
-   InitPeripheralClocks();
-
-}
 
 void DisableDog(void)
 {
@@ -212,7 +542,7 @@ void DisableDog(void)
 
 void InitPll(int val,int divsel)
 {
-	 // Make sure the PLL is not running in limp mode
+     // Make sure the PLL is not running in limp mode
    if (SysCtrlRegs.PLLSTS.bit.MCLKSTS != 0)
    {
       // Missing external clock has been detected
@@ -258,12 +588,12 @@ void InitPll(int val,int divsel)
       // The watchdog should be disabled before this loop, or fed within
       // the loop via ServiceDog().
 
-	  // Uncomment to disable the watchdog
+      // Uncomment to disable the watchdog
       DisableDog();
 
       while(SysCtrlRegs.PLLSTS.bit.PLLLOCKS != 1)
       {
-	      // Uncomment to service the watchdog
+          // Uncomment to service the watchdog
           // ServiceDog();
       }
 
@@ -273,24 +603,24 @@ void InitPll(int val,int divsel)
     }
 
     // If switching to 1/2
-	if((divsel == 1)||(divsel == 2))
-	{
-		EALLOW;
-	    SysCtrlRegs.PLLSTS.bit.DIVSEL = divsel;
-	    EDIS;
-	}
+    if((divsel == 1)||(divsel == 2))
+    {
+        EALLOW;
+        SysCtrlRegs.PLLSTS.bit.DIVSEL = divsel;
+        EDIS;
+    }
 
-	// If switching to 1/1
-	// * First go to 1/2 and let the power settle
-	//   The time required will depend on the system, this is only an example
-	// * Then switch to 1/1
-	if(divsel == 3)
-	{
-		EALLOW;
-	    SysCtrlRegs.PLLSTS.bit.DIVSEL = 2;
-	    delay(10);
-	    SysCtrlRegs.PLLSTS.bit.DIVSEL = 3;
-	    EDIS;
+    // If switching to 1/1
+    // * First go to 1/2 and let the power settle
+    //   The time required will depend on the system, this is only an example
+    // * Then switch to 1/1
+    if(divsel == 3)
+    {
+        EALLOW;
+        SysCtrlRegs.PLLSTS.bit.DIVSEL = 2;
+        delay(10);
+        SysCtrlRegs.PLLSTS.bit.DIVSEL = 3;
+        EDIS;
     }
 }
 
@@ -324,7 +654,7 @@ void InitPeripheralClocks(void)
 
    SysCtrlRegs.PCLKCR0.bit.ADCENCLK = 1;    // ADC     ”√HSPCLKº∆ ±
 
-	delay(100);                              
+    delay(100);                              
 
       // *IMPORTANT*
    // The ADC_cal function, which  copies the ADC calibration values from TI reserved
@@ -342,11 +672,11 @@ void InitPeripheralClocks(void)
 
 
    SysCtrlRegs.PCLKCR0.bit.I2CAENCLK = 1;   // I2C       ”√SYSCLKOUTº∆ ±
-   SysCtrlRegs.PCLKCR0.bit.SCIAENCLK = 0;   // SCI-A     ”√LSPCLK∆ ±
+   SysCtrlRegs.PCLKCR0.bit.SCIAENCLK = 0;   // SCI-A     ”√LSPCLK∆ ?
    SysCtrlRegs.PCLKCR0.bit.SCIBENCLK = 0;   // SCI-B
    SysCtrlRegs.PCLKCR0.bit.SCICENCLK = 1;   // SCI-C
    SysCtrlRegs.PCLKCR0.bit.SPIAENCLK = 1;   // SPI-A     ”√LSPCLKº∆ ±
-   SysCtrlRegs.PCLKCR0.bit.MCBSPAENCLK = 0; // McBSP-A   √LSPCLK∆ ±
+   SysCtrlRegs.PCLKCR0.bit.MCBSPAENCLK = 0; // McBSP-A   √LSPCLK∆ ?
    SysCtrlRegs.PCLKCR0.bit.MCBSPBENCLK = 0; // McBSP-B
    SysCtrlRegs.PCLKCR0.bit.ECANAENCLK=1;    // eCAN-A    ”√SYSCLKOUT/2º∆ ±
    SysCtrlRegs.PCLKCR0.bit.ECANBENCLK=1;    // eCAN-B
@@ -381,49 +711,7 @@ void InitPeripheralClocks(void)
 }
 
 
-void InitFlash(void)
-{
-   EALLOW;
-   //Enable Flash Pipeline mode to improve performance
-   //of code executed from Flash.
-   FlashRegs.FOPT.bit.ENPIPE = 1;   // πƒ‹FLASH¡˜ÀÆœﬂƒ£ Ω
 
-   //                CAUTION
-   //Minimum waitstates required for the flash operating
-   //at a given CPU rate must be characterized by TI.
-   //Refer to the datasheet for the latest information.
-//#if CPU_FRQ_150MHZ
-   //Set the Paged Waitstate for the Flash
-   FlashRegs.FBANKWAIT.bit.PAGEWAIT = 5;
-
-   //Set the Random Waitstate for the Flash
-   FlashRegs.FBANKWAIT.bit.RANDWAIT = 5;
-
-   //Set the Waitstate for the OTP
-   FlashRegs.FOTPWAIT.bit.OTPWAIT = 8;
-//#endif
-
-//#if CPU_FRQ_100MHZ
-   //Set the Paged Waitstate for the Flash
- // FlashRegs.FBANKWAIT.bit.PAGEWAIT = 3;
-
-   //Set the Random Waitstate for the Flash
- //  FlashRegs.FBANKWAIT.bit.RANDWAIT = 3;
-
-   //Set the Waitstate for the OTP
- //  FlashRegs.FOTPWAIT.bit.OTPWAIT = 5;
-//#endif
-   //                CAUTION
-   //ONLY THE DEFAULT VALUE FOR THESE 2 REGISTERS SHOULD BE USED
-   FlashRegs.FSTDBYWAIT.bit.STDBYWAIT = 0x01FF;    //¥”ÀØ√ﬂµΩ±∏”√Ã¨µ»¥˝511∏ˆ÷‹∆⁄
-   FlashRegs.FACTIVEWAIT.bit.ACTIVEWAIT = 0x01FF;    //¥”±∏”√µΩº§ªÓÃ¨µ»¥˝511∏ˆ÷‹∆⁄
-   EDIS;
-
-   //Force a pipeline flush to ensure that the write to
-   //the last register configured occurs before returning.
-
-   asm(" RPT #7 || NOP");
-}
 
 
 
@@ -435,68 +723,54 @@ void InitPieCtrl(void)
     // Disable the PIE
     PieCtrlRegs.PIECTRL.bit.ENPIE = 0;
 
-	// Clear all PIEIER( πƒ‹) registers:
-	PieCtrlRegs.PIEIER1.all = 0;
-	PieCtrlRegs.PIEIER2.all = 0;
-	PieCtrlRegs.PIEIER3.all = 0;	
-	PieCtrlRegs.PIEIER4.all = 0;
-	PieCtrlRegs.PIEIER5.all = 0;
-	PieCtrlRegs.PIEIER6.all = 0;
-	PieCtrlRegs.PIEIER7.all = 0;
-	PieCtrlRegs.PIEIER8.all = 0;
-	PieCtrlRegs.PIEIER9.all = 0;
-	PieCtrlRegs.PIEIER10.all = 0;
-	PieCtrlRegs.PIEIER11.all = 0;
-	PieCtrlRegs.PIEIER12.all = 0;
+    // Clear all PIEIER( πƒ‹) registers:
+    PieCtrlRegs.PIEIER1.all = 0;
+    PieCtrlRegs.PIEIER2.all = 0;
+    PieCtrlRegs.PIEIER3.all = 0;	
+    PieCtrlRegs.PIEIER4.all = 0;
+    PieCtrlRegs.PIEIER5.all = 0;
+    PieCtrlRegs.PIEIER6.all = 0;
+    PieCtrlRegs.PIEIER7.all = 0;
+    PieCtrlRegs.PIEIER8.all = 0;
+    PieCtrlRegs.PIEIER9.all = 0;
+    PieCtrlRegs.PIEIER10.all = 0;
+    PieCtrlRegs.PIEIER11.all = 0;
+    PieCtrlRegs.PIEIER12.all = 0;
 
-	// Clear all PIEIFR(±Í÷æ) registers:
-	PieCtrlRegs.PIEIFR1.all = 0;
-	PieCtrlRegs.PIEIFR2.all = 0;
-	PieCtrlRegs.PIEIFR3.all = 0;	
-	PieCtrlRegs.PIEIFR4.all = 0;
-	PieCtrlRegs.PIEIFR5.all = 0;
-	PieCtrlRegs.PIEIFR6.all = 0;
-	PieCtrlRegs.PIEIFR7.all = 0;
-	PieCtrlRegs.PIEIFR8.all = 0;
-	PieCtrlRegs.PIEIFR9.all = 0;
-	PieCtrlRegs.PIEIFR10.all = 0;
-	PieCtrlRegs.PIEIFR11.all = 0;
-	PieCtrlRegs.PIEIFR12.all = 0;
-
-
+    // Clear all PIEIFR(±Í÷æ) registers:
+    PieCtrlRegs.PIEIFR1.all = 0;
+    PieCtrlRegs.PIEIFR2.all = 0;
+    PieCtrlRegs.PIEIFR3.all = 0;	
+    PieCtrlRegs.PIEIFR4.all = 0;
+    PieCtrlRegs.PIEIFR5.all = 0;
+    PieCtrlRegs.PIEIFR6.all = 0;
+    PieCtrlRegs.PIEIFR7.all = 0;
+    PieCtrlRegs.PIEIFR8.all = 0;
+    PieCtrlRegs.PIEIFR9.all = 0;
+    PieCtrlRegs.PIEIFR10.all = 0;
+    PieCtrlRegs.PIEIFR11.all = 0;
+    PieCtrlRegs.PIEIFR12.all = 0;
 }
 
 
 
-void Initial_INT(void)
-{
-	DINT;        //Disable interrupt
 
-	InitPieCtrl();
-	IER = 0x0000;
-    IFR = 0x0000;
-    PieCtrlRegs.PIECTRL.bit.ENPIE = 1;// PIE_TABLE ENABLE
-    EALLOW;  // This is needed to write to EALLOW protected registers
-    PieVectTable.EPWM6_INT   = &current_isr; 
-    PieVectTable.ADCINT      = &ad_sample_isr;   
-	EDIS;
-}
 void InitCpuTimers(void)
 {
     // CPU Timer 0
-	// Initialize address pointers to respective timer registers:
-	CpuTimer0.RegsAddr = &CpuTimer0Regs;
-	// Initialize timer period to maximum:÷‹∆⁄ºƒ¥Ê∆˜£¨≥ı ºªØ∂® ±∆˜÷‹∆⁄
-	CpuTimer0Regs.PRD.all  = 0xFFFFFFFF;
-	// Initialize pre-scale counter to divide by 1 (SYSCLKOUT):
-	CpuTimer0Regs.TPR.all  = 0;
-	CpuTimer0Regs.TPRH.all = 0;
-	// Make sure timer is stopped:øÿ÷∆ºƒ¥Ê∆˜£¨Õ£÷π∂® ±∆˜
-	CpuTimer0Regs.TCR.bit.TSS = 1;
-	// Reload all counter register with period value: ∂® ±∆˜÷ÿ–¬◊∞‘ÿ
-	CpuTimer0Regs.TCR.bit.TRB = 1;
-	// Reset interrupt counters:
-	CpuTimer0.InterruptCount = 0;
+    // Initialize address pointers to respective timer registers:
+    CpuTimer0.RegsAddr = &CpuTimer0Regs;
+    // Initialize timer period to maximum:÷‹∆⁄ºƒ¥Ê∆˜£¨≥ı ºªØ∂® ±∆˜÷‹∆⁄
+    CpuTimer0Regs.PRD.all  = 0xFFFFFFFF;
+    // Initialize pre-scale counter to divide by 1 (SYSCLKOUT):
+    CpuTimer0Regs.TPR.all  = 0;
+    CpuTimer0Regs.TPRH.all = 0;
+    // Make sure timer is stopped:øÿ÷∆ºƒ¥Ê∆˜£¨Õ£÷π∂® ±∆˜
+    CpuTimer0Regs.TCR.bit.TSS = 1;
+    // Reload all counter register with period value: ∂® ±∆˜÷ÿ–¬◊∞‘ÿ
+    CpuTimer0Regs.TCR.bit.TRB = 1;
+    // Reset interrupt counters:
+    CpuTimer0.InterruptCount = 0;
 
 
 // CpuTimer 1 and CpuTimer2 are reserved for DSP BIOS & other RTOS
@@ -504,25 +778,25 @@ void InitCpuTimers(void)
 // DSP-BIOS or another realtime OS.
 //
 // Initialize address pointers to respective timer registers:
-	CpuTimer1.RegsAddr = &CpuTimer1Regs;
-	CpuTimer2.RegsAddr = &CpuTimer2Regs;
-	// Initialize timer period to maximum:
-	CpuTimer1Regs.PRD.all  = 0xFFFFFFFF;
-	CpuTimer2Regs.PRD.all  = 0xFFFFFFFF;
+    CpuTimer1.RegsAddr = &CpuTimer1Regs;
+    CpuTimer2.RegsAddr = &CpuTimer2Regs;
+    // Initialize timer period to maximum:
+    CpuTimer1Regs.PRD.all  = 0xFFFFFFFF;
+    CpuTimer2Regs.PRD.all  = 0xFFFFFFFF;
     // Initialize pre-scale counter to divide by 1 (SYSCLKOUT):
-	CpuTimer1Regs.TPR.all  = 0;
-	CpuTimer1Regs.TPRH.all = 0;
-	CpuTimer2Regs.TPR.all  = 0;
-	CpuTimer2Regs.TPRH.all = 0;
+    CpuTimer1Regs.TPR.all  = 0;
+    CpuTimer1Regs.TPRH.all = 0;
+    CpuTimer2Regs.TPR.all  = 0;
+    CpuTimer2Regs.TPRH.all = 0;
     // Make sure timers are stopped:
-	CpuTimer1Regs.TCR.bit.TSS = 1;
-	CpuTimer2Regs.TCR.bit.TSS = 1;
-	// Reload all counter register with period value:
-	CpuTimer1Regs.TCR.bit.TRB = 1;
-	CpuTimer2Regs.TCR.bit.TRB = 1;
-	// Reset interrupt counters:
-	CpuTimer1.InterruptCount = 0;
-	CpuTimer2.InterruptCount = 0;
+    CpuTimer1Regs.TCR.bit.TSS = 1;
+    CpuTimer2Regs.TCR.bit.TSS = 1;
+    // Reload all counter register with period value:
+    CpuTimer1Regs.TCR.bit.TRB = 1;
+    CpuTimer2Regs.TCR.bit.TRB = 1;
+    // Reset interrupt counters:
+    CpuTimer1.InterruptCount = 0;
+    CpuTimer2.InterruptCount = 0;
 
 }
 
@@ -532,29 +806,29 @@ struct CPUTIMER_VARS CpuTimer2;
 
 void ConfigCpuTimer(struct CPUTIMER_VARS *Timer, float Freq, float Period)
 {
-	Uint32 	temp;
+    Uint32 	temp;
 
-	// Initialize timer period:
-	Timer->CPUFreqInMHz = Freq;
-	Timer->PeriodInUSec = Period;
-	temp = (long) (Freq * Period);
-	Timer->RegsAddr->PRD.all = temp;
+    // Initialize timer period:
+    Timer->CPUFreqInMHz = Freq;
+    Timer->PeriodInUSec = Period;
+    temp = (long) (Freq * Period);
+    Timer->RegsAddr->PRD.all = temp;
 
-	// Set pre-scale counter to divide by 1 (SYSCLKOUT):
-	Timer->RegsAddr->TPR.all  = 0;
-	Timer->RegsAddr->TPRH.all  = 0;
+    // Set pre-scale counter to divide by 1 (SYSCLKOUT):
+    Timer->RegsAddr->TPR.all  = 0;
+    Timer->RegsAddr->TPRH.all  = 0;
 
-	// Initialize timer control register:
-	Timer->RegsAddr->TCR.bit.TSS = 1;      // 1 = Stop timer, 0 = Start/Restart Timer
-	Timer->RegsAddr->TCR.bit.TRB = 1;      // 1 = reload timer
-	Timer->RegsAddr->TCR.bit.SOFT = 0;
-	Timer->RegsAddr->TCR.bit.FREE = 0;     // Timer Free Run Disabled
-	Timer->RegsAddr->TCR.bit.TIE = 1;      // 0 = Disable/ 1 = Enable Timer Interrupt
+    // Initialize timer control register:
+    Timer->RegsAddr->TCR.bit.TSS = 1;      // 1 = Stop timer, 0 = Start/Restart Timer
+    Timer->RegsAddr->TCR.bit.TRB = 1;      // 1 = reload timer
+    Timer->RegsAddr->TCR.bit.SOFT = 0;
+    Timer->RegsAddr->TCR.bit.FREE = 0;     // Timer Free Run Disabled
+    Timer->RegsAddr->TCR.bit.TIE = 1;      // 0 = Disable/ 1 = Enable Timer Interrupt
 
-	// Reset interrupt counter:
-	Timer->InterruptCount = 0;
+    // Reset interrupt counter:
+    Timer->InterruptCount = 0;
 
-	CpuTimer0Regs.TCR.all = 0x4001; // Use write-only instruction to set TSS bit = 0 0100 0000 0000 0001∆Ù∂Ø∂® ±∆˜
+    CpuTimer0Regs.TCR.all = 0x4001; // Use write-only instruction to set TSS bit = 0 0100 0000 0000 0001∆Ù∂Ø∂® ±∆˜
 }
 
 void EN_INT(void)
@@ -572,297 +846,279 @@ void EN_INT(void)
 
 void DIS_INT(void)
 {
-	PieCtrlRegs.PIEIER1.bit.INTx6 = 0; //AD÷–∂œΩ˚÷π
+    PieCtrlRegs.PIEIER1.bit.INTx6 = 0; //AD÷–∂œΩ˚÷π
     PieCtrlRegs.PIEIER3.bit.INTx6 = 0; //EPWM6÷–∂œΩ˚÷π
-	DINT;
-	DRTM;
-
-
-
-
+    DINT;
+    DRTM;
 }
-void InitEPwm1()
+
+
+static void InitEPwm1(void)
 {
+    /******…Ë÷√Time_Baseºƒ¥Ê∆˜******/
+
+    EPwm1Regs.TBPRD = EPWM1_TIMER_TBPRD;              // …Ë÷√º∆ ˝∆˜÷‹∆⁄
+    EPwm1Regs.TBPHS.half.TBPHS = 0x0000;              // …Ë÷√œ‡ŒªŒ™0
+    EPwm1Regs.TBCTR = 0x0000;                         // «Â¡„º∆ ˝∆˜
+    EPwm1Regs.TBCTL.bit.CTRMODE = TB_COUNT_UPDOWN;    // ≤˙…˙∂‘≥∆≤®–Œµƒƒ£ Ω
+    EPwm1Regs.TBCTL.bit.PHSEN = TB_ENABLE;            // œ‡Œª‘ÿ»Î
+    EPwm1Regs.TBCTL.bit.PRDLD = TB_SHADOW;            // Õ®˜∑
+    EPwm1Regs.TBCTL.bit.SYNCOSEL = TB_CTR_ZERO;       // »∑∂®PWMµƒÕ¨Ω ±÷ ‰»Î£¨CTR=Zero
+    EPwm1Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;          // ∏ﬂŸ ±”÷µ
+    EPwm1Regs.TBCTL.bit.CLKDIV = TB_DIV1;             //  ±÷”∑÷∆µTBCLK = SYSCLKOUT / (HSPCLKDIV*CLKDIV)
+
+    /*****…Ë÷√Counter-Compareºƒ¥Ê∆˜*****/
+
+    EPwm1Regs.CMPCTL.bit.SHDWAMODE = CC_SHADOW;       // ¥”“ı”∞ºƒ¥Ê˜ÿ»Î±»Ωœ÷µ
+    EPwm1Regs.CMPCTL.bit.SHDWBMODE = CC_SHADOW;       // ¥”“ı”∞ƒ¥Ê∆˜‘ÿ»Î±Ωœ÷µ
+    EPwm1Regs.CMPCTL.bit.LOADAMODE = CC_CTR_ZERO;     // µ±CTR=Zero ±‘ÿ?
+    EPwm1Regs.CMPCTL.bit.LOADBMODE = CC_CTR_ZERO;     // µ±CTR=Zero ±‘ÿ»Î
+    EPwm1Regs.CMPA.half.CMPA = 3750;
+
+    /*****…Ë÷√Action-QualifierºƒÊ∆?****/
+
+    EPwm1Regs.AQCTLA.bit.CAU = AQ_SET;                // ‘ˆº∆ ˝µΩCOMPA ±÷√∏ﬂµÁ∆Ω
+    EPwm1Regs.AQCTLA.bit.CAD = AQ_CLEAR;              // ºıº∆ ˝µΩCOMPA ±÷√µÕµÁ∆Ω
+
+    /*****…Ë÷√Dead_Bandºƒ¥Ê∆˜*****/
+
+    EPwm1Regs.DBCTL.bit.OUT_MODE = DB_FULL_ENABLE;    // Dead_Bandºƒ¥Ê∆˜ ‰≥ˆµƒPWM1A°¢PWM1B∂º”–À¿«¯
+    EPwm1Regs.DBCTL.bit.IN_MODE = DBA_ALL;            // Dead_Bandºƒ¥Ê∆˜ ‰»Î±PWM1A…œ…˝—ÿ∫Õœ¬Ωµ—ÿ∂º”–—”
+    EPwm1Regs.DBCTL.bit.POLSEL = DB_ACTV_HIC;         // EPWM1Bƒ£ Ω
+    //  EPwm1Regs.DBFED = DB_PRD_UP;                       // …Ë∂®œ¬µ—À¿«¯ ±º‰
+    //  EPwm1Regs.DBRED = DB_PRD_DOWN;                     // …Ë∂®…œ…˝—ÿÀ¿«¯ ±º‰
+
+    EPwm1Regs.DBFED = 1000;                       // …Ë∂®œ¬µ—À¿«¯ ±º‰
+    EPwm1Regs.DBRED = 1000; 
+
+    EALLOW;
 
 
-   /******…Ë÷√Time_Baseºƒ¥Ê∆˜******/
+    EPwm1Regs.TZCTL.bit.TZA = 2;
+    EPwm1Regs.TZCTL.bit.TZB = 2;
 
-   EPwm1Regs.TBPRD = EPWM1_TIMER_TBPRD;              // …Ë÷√º∆ ˝∆˜÷‹∆⁄
-   EPwm1Regs.TBPHS.half.TBPHS = 0x0000;              // …Ë÷√œ‡ŒªŒ™0
-   EPwm1Regs.TBCTR = 0x0000;                         // «Â¡„º∆ ˝∆˜
-   EPwm1Regs.TBCTL.bit.CTRMODE = TB_COUNT_UPDOWN;    // ≤˙…˙∂‘≥∆≤®–Œµƒƒ£ Ω
-   EPwm1Regs.TBCTL.bit.PHSEN = TB_ENABLE;            // œ‡Œª‘ÿ»Î
-   EPwm1Regs.TBCTL.bit.PRDLD = TB_SHADOW;            // Õ®˜∑
-   EPwm1Regs.TBCTL.bit.SYNCOSEL = TB_CTR_ZERO;       // »∑∂®PWMµƒÕ¨Ω ±÷ ‰»Î£¨CTR=Zero
-   EPwm1Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;          // ∏ﬂŸ ±”÷µ
-   EPwm1Regs.TBCTL.bit.CLKDIV = TB_DIV1;             //  ±÷”∑÷∆µTBCLK = SYSCLKOUT / (HSPCLKDIV*CLKDIV)
+    EPwm1Regs.TZFRC.bit.OST = 1;
 
-   /*****…Ë÷√Counter-Compareºƒ¥Ê∆˜*****/
-
-   EPwm1Regs.CMPCTL.bit.SHDWAMODE = CC_SHADOW;       // ¥”“ı”∞ºƒ¥Ê˜ÿ»Î±»Ωœ÷µ
-   EPwm1Regs.CMPCTL.bit.SHDWBMODE = CC_SHADOW;       // ¥”“ı”∞ƒ¥Ê∆˜‘ÿ»Î±Ωœ÷µ
-   EPwm1Regs.CMPCTL.bit.LOADAMODE = CC_CTR_ZERO;     // µ±CTR=Zero ±‘ÿÎ
-   EPwm1Regs.CMPCTL.bit.LOADBMODE = CC_CTR_ZERO;     // µ±CTR=Zero ±‘ÿ»Î
-   EPwm1Regs.CMPA.half.CMPA = 3750;
-   
-   /*****…Ë÷√Action-QualifierºƒÊ∆˜****/
-   
-   EPwm1Regs.AQCTLA.bit.CAU = AQ_SET;                // ‘ˆº∆ ˝µΩCOMPA ±÷√∏ﬂµÁ∆Ω
-   EPwm1Regs.AQCTLA.bit.CAD = AQ_CLEAR;              // ºıº∆ ˝µΩCOMPA ±÷√µÕµÁ∆Ω
-
-   /*****…Ë÷√Dead_Bandºƒ¥Ê∆˜*****/
-
-   EPwm1Regs.DBCTL.bit.OUT_MODE = DB_FULL_ENABLE;    // Dead_Bandºƒ¥Ê∆˜ ‰≥ˆµƒPWM1A°¢PWM1B∂º”–À¿«¯
-   EPwm1Regs.DBCTL.bit.IN_MODE = DBA_ALL;            // Dead_Bandºƒ¥Ê∆˜ ‰»Î ±PWM1A…œ…˝—ÿ∫Õœ¬Ωµ—ÿ∂º”–—”
-   EPwm1Regs.DBCTL.bit.POLSEL = DB_ACTV_HIC;         // EPWM1Bƒ£ Ω
- //  EPwm1Regs.DBFED = DB_PRD_UP;                       // …Ë∂®œ¬µ—À¿«¯ ±º‰
- //  EPwm1Regs.DBRED = DB_PRD_DOWN;                     // …Ë∂®…œ…˝—ÿÀ¿«¯ ±º‰
-
-   EPwm1Regs.DBFED = 1000;                       // …Ë∂®œ¬µ—À¿«¯ ±º‰
-   EPwm1Regs.DBRED = 1000; 
-
-   EALLOW;
-
-
-   EPwm1Regs.TZCTL.bit.TZA = 2;
-   EPwm1Regs.TZCTL.bit.TZB = 2;
-
-   EPwm1Regs.TZFRC.bit.OST = 1;
-
-   EDIS;
-
-
+    EDIS;
 }
 
 
-void InitEPwm2()
+static void InitEPwm2(void)
 {  
-   /******…Ë÷√Time_Baseºƒ¥Ê∆˜******/
+    /******…Ë÷√Time_Baseºƒ¥Ê∆˜******/
 
-   EPwm2Regs.TBPRD = EPWM2_TIMER_TBPRD;           // …Ë÷√º∆ ˝∆˜µƒ÷‹∆⁄
-   EPwm2Regs.TBPHS.half.TBPHS = 0x0000;            // …Ë÷√œ‡ŒªŒ™0
-   EPwm2Regs.TBCTR = 0x0000;                      // «Â¡„º∆ ˝∆˜
-   EPwm2Regs.TBCTL.bit.CTRMODE = TB_COUNT_UPDOWN; // ≤˙…˙∂‘≥∆≤®–Œµƒƒ£ Ω
-   EPwm2Regs.TBCTL.bit.PRDLD = TB_SHADOW;         // Õ®π˝“ı”∞ºƒ¥Ê∆˜∑√Œ 
-   EPwm2Regs.TBCTL.bit.SYNCOSEL = TB_SYNC_IN;     // »∑∂®EPWM2µƒÕ¨≤Ω ±÷” ‰»Î£¨EPWM1SYNC
-   EPwm2Regs.TBCTL.bit.PHSEN =    TB_ENABLE;      //  πƒ‹œ‡Œª‘ÿ»Î
-   EPwm2Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;       // ∏ﬂÀŸ ±÷”∑÷∆µ
-   EPwm2Regs.TBCTL.bit.CLKDIV = TB_DIV1;          //  ±÷”∑÷∆µTBCLK = SYSCLKOUT / (HSPCLKDIV*CLKDIV)
-   
-   /*****…Ë÷√Counter-Compareºƒ¥Ê∆˜*****/
+    EPwm2Regs.TBPRD = EPWM2_TIMER_TBPRD;           // …Ë÷√º∆ ˝∆˜µƒ÷‹∆⁄
+    EPwm2Regs.TBPHS.half.TBPHS = 0x0000;            // …Ë÷√œ‡ŒªŒ™0
+    EPwm2Regs.TBCTR = 0x0000;                      // «Â¡„º∆ ˝∆˜
+    EPwm2Regs.TBCTL.bit.CTRMODE = TB_COUNT_UPDOWN; // ≤˙…˙∂‘≥∆≤®–Œµƒƒ£ Ω
+    EPwm2Regs.TBCTL.bit.PRDLD = TB_SHADOW;         // Õ®π˝“ı”∞ºƒ¥Ê∆˜∑√Œ 
+    EPwm2Regs.TBCTL.bit.SYNCOSEL = TB_SYNC_IN;     // »∑∂®EPWM2µƒÕ¨≤Ω ±÷” ‰»Î£¨EPWM1SYNC
+    EPwm2Regs.TBCTL.bit.PHSEN =    TB_ENABLE;      //  πƒ‹œ‡Œª‘ÿ»Î
+    EPwm2Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;       // ∏ﬂÀŸ ±÷”∑÷∆µ
+    EPwm2Regs.TBCTL.bit.CLKDIV = TB_DIV1;          //  ±÷”∑÷∆µTBCLK = SYSCLKOUT / (HSPCLKDIV*CLKDIV)
 
-   EPwm2Regs.CMPCTL.bit.SHDWAMODE = CC_SHADOW;       // ¥”“ı”∞ºƒ¥Ê∆˜‘ÿ»Î±»Ωœ÷µ
-   EPwm2Regs.CMPCTL.bit.SHDWBMODE = CC_SHADOW;       // ¥”“ı”∞ºƒ¥Ê∆˜‘ÿ»Î±»Ωœ÷µ
-   EPwm2Regs.CMPCTL.bit.LOADAMODE = CC_CTR_ZERO;     // µ±CTR=Zero ±‘ÿ»Î
-   EPwm2Regs.CMPCTL.bit.LOADBMODE = CC_CTR_ZERO;     // µ±CTR=Zero ±‘ÿ»Î
-   EPwm2Regs.CMPA.half.CMPA = 3750;
-  
+    /*****…Ë÷√Counter-Compareºƒ¥Ê∆˜*****/
+
+    EPwm2Regs.CMPCTL.bit.SHDWAMODE = CC_SHADOW;       // ¥”“ı”∞ºƒ¥Ê∆˜‘ÿ»Î±»Ωœ÷µ
+    EPwm2Regs.CMPCTL.bit.SHDWBMODE = CC_SHADOW;       // ¥”“ı”∞ºƒ¥Ê∆˜‘ÿ»Î±»Ωœ÷µ
+    EPwm2Regs.CMPCTL.bit.LOADAMODE = CC_CTR_ZERO;     // µ±CTR=Zero ±‘ÿ»Î
+    EPwm2Regs.CMPCTL.bit.LOADBMODE = CC_CTR_ZERO;     // µ±CTR=Zero ±‘ÿ»Î
+    EPwm2Regs.CMPA.half.CMPA = 3750;
+
     /*****…Ë÷√Action-Qualifierºƒ¥Ê∆˜*****/
-   
-   EPwm2Regs.AQCTLA.bit.CAU = AQ_SET;                // ‘ˆº∆ ˝µΩCOMPA ±÷√∏ﬂµÁ∆Ω
-   EPwm2Regs.AQCTLA.bit.CAD = AQ_CLEAR;              // ºıº∆ ˝µΩCOMPA ±÷√µÕµÁ∆Ω
-   /*****…Ë÷√Dead_Bandºƒ¥Ê∆˜*****/
 
-   EPwm2Regs.DBCTL.bit.OUT_MODE = DB_FULL_ENABLE;    // Dead_Bandºƒ¥Ê∆˜ ‰≥ˆµƒPWM2A°¢PWM2B∂º”–À¿«¯
-   EPwm2Regs.DBCTL.bit.IN_MODE = DBA_ALL;            // Dead_Bandºƒ¥Ê∆˜ ‰»Î ±PWM2A…œ…˝—ÿ∫Õœ¬Ωµ—ÿ∂º”–—”≥Ÿ
-   EPwm2Regs.DBCTL.bit.POLSEL = DB_ACTV_HIC;         // ÷˜∏ﬂª•≤πƒ£ Ω
-  // EPwm2Regs.DBFED = DB_PRD_UP;                             // …Ë∂®œ¬Ωµ—ÿÀ¿«¯ ±º‰
- //  EPwm2Regs.DBRED = DB_PRD_DOWN;                             // …Ë∂®…œ…˝—ÿÀ¿«¯ ±º‰
+    EPwm2Regs.AQCTLA.bit.CAU = AQ_SET;                // ‘ˆº∆ ˝µΩCOMPA ±÷√∏ﬂµÁ∆Ω
+    EPwm2Regs.AQCTLA.bit.CAD = AQ_CLEAR;              // ºıº∆ ˝µΩCOMPA ±÷√µÕµÁ∆Ω
+    /*****…Ë÷√Dead_Bandºƒ¥Ê∆˜*****/
 
-   EPwm2Regs.DBFED = 1000;                             // …Ë∂®œ¬Ωµ—ÿÀ¿«¯ ±º‰
-   EPwm2Regs.DBRED = 1000;                             // …Ë∂®…œ…˝—ÿÀ¿«¯ ±º‰
+    EPwm2Regs.DBCTL.bit.OUT_MODE = DB_FULL_ENABLE;    // Dead_Bandºƒ¥Ê∆˜ ‰≥ˆµƒPWM2A°¢PWM2B∂º”–À¿«¯
+    EPwm2Regs.DBCTL.bit.IN_MODE = DBA_ALL;            // Dead_Bandºƒ¥Ê∆˜ ‰»Î ±PWM2A…œ…˝—ÿ∫Õœ¬Ωµ—ÿ∂º”–—”≥Ÿ
+    EPwm2Regs.DBCTL.bit.POLSEL = DB_ACTV_HIC;         // ÷˜∏ﬂª•≤πƒ£ Ω
+    // EPwm2Regs.DBFED = DB_PRD_UP;                             // …Ë∂®œ¬Ωµ—ÿÀ¿«¯ ±º‰
+    //  EPwm2Regs.DBRED = DB_PRD_DOWN;                             // …Ë∂®…œ…˝—ÿÀ¿«¯ ±º‰
 
-   EALLOW;
+    EPwm2Regs.DBFED = 1000;                             // …Ë∂®œ¬Ωµ—ÿÀ¿«¯ ±º‰
+    EPwm2Regs.DBRED = 1000;                             // …Ë∂®…œ…˝—ÿÀ¿«¯ ±º‰
 
-   EPwm2Regs.TZCTL.bit.TZA = 2;
-   EPwm2Regs.TZCTL.bit.TZB = 2;
+    EALLOW;
 
-   EPwm2Regs.TZFRC.bit.OST = 1;
+    EPwm2Regs.TZCTL.bit.TZA = 2;
+    EPwm2Regs.TZCTL.bit.TZB = 2;
 
-   EDIS;
+    EPwm2Regs.TZFRC.bit.OST = 1;
 
-
- 
+    EDIS;
 }
 
-void InitEPwm3(void)
+static void InitEPwm3(void)
 {
+    /******…Ë÷√Time_Baseºƒ¥Ê∆˜******/
 
-   
-  /******…Ë÷√Time_Baseºƒ¥Ê∆˜******/
+    EPwm3Regs.TBPRD = EPWM3_TIMER_TBPRD;           // …Ë÷√º∆ ˝∆˜µƒ÷‹∆⁄
+    EPwm3Regs.TBPHS.half.TBPHS = 0x0000;            // …Ë÷√œ‡ŒªŒ™0
+    EPwm3Regs.TBCTR = 0x0000;                      // «Â¡„º∆ ˝∆˜
+    EPwm3Regs.TBCTL.bit.CTRMODE = TB_COUNT_UPDOWN; // ≤˙…˙∂‘≥∆≤®–Œµƒƒ£ Ω
+    EPwm3Regs.TBCTL.bit.PRDLD = TB_SHADOW;         // Õ®π˝“ı”∞ºƒ¥Ê∆˜∑√Œ 
+    EPwm3Regs.TBCTL.bit.SYNCOSEL = TB_SYNC_IN;     // »∑∂®EPWM3µƒÕ¨≤Ω ±÷” ‰»Î£¨EPWM2SYNC
+    EPwm3Regs.TBCTL.bit.PHSEN = TB_ENABLE;         //  πƒ‹œ‡Œª‘ÿ»Î
+    EPwm3Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;       // ∏ﬂÀŸ ±÷”∑÷∆µ
+    EPwm3Regs.TBCTL.bit.CLKDIV = TB_DIV1;          //  ±÷”∑÷∆µTBCLK = SYSCLKOUT / (HSPCLKDIV*CLKDIV)
 
-   EPwm3Regs.TBPRD = EPWM3_TIMER_TBPRD;           // …Ë÷√º∆ ˝∆˜µƒ÷‹∆⁄
-   EPwm3Regs.TBPHS.half.TBPHS = 0x0000;            // …Ë÷√œ‡ŒªŒ™0
-   EPwm3Regs.TBCTR = 0x0000;                      // «Â¡„º∆ ˝∆˜
-   EPwm3Regs.TBCTL.bit.CTRMODE = TB_COUNT_UPDOWN; // ≤˙…˙∂‘≥∆≤®–Œµƒƒ£ Ω
-   EPwm3Regs.TBCTL.bit.PRDLD = TB_SHADOW;         // Õ®π˝“ı”∞ºƒ¥Ê∆˜∑√Œ 
-   EPwm3Regs.TBCTL.bit.SYNCOSEL = TB_SYNC_IN;     // »∑∂®EPWM3µƒÕ¨≤Ω ±÷” ‰»Î£¨EPWM2SYNC
-   EPwm3Regs.TBCTL.bit.PHSEN = TB_ENABLE;         //  πƒ‹œ‡Œª‘ÿ»Î
-   EPwm3Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;       // ∏ﬂÀŸ ±÷”∑÷∆µ
-   EPwm3Regs.TBCTL.bit.CLKDIV = TB_DIV1;          //  ±÷”∑÷∆µTBCLK = SYSCLKOUT / (HSPCLKDIV*CLKDIV)
+    /*****…Ë÷√Counter-Compareºƒ¥Ê∆˜*****/
 
-   /*****…Ë÷√Counter-Compareºƒ¥Ê∆˜*****/
+    EPwm3Regs.CMPCTL.bit.SHDWAMODE = CC_SHADOW;       // ¥”“ı”∞ºƒ¥Ê∆˜‘ÿ»Î±»Ωœ÷µ
+    EPwm3Regs.CMPCTL.bit.SHDWBMODE = CC_SHADOW;       // ¥”“ı”∞ºƒ¥Ê∆˜‘ÿ»Î±»Ωœ÷µ
+    EPwm3Regs.CMPCTL.bit.LOADAMODE = CC_CTR_ZERO;     // µ±CTR=Zero ±‘ÿ»Î
+    EPwm3Regs.CMPCTL.bit.LOADBMODE = CC_CTR_ZERO;     // µ±CTR=Zero ±‘ÿ»Î
+    EPwm3Regs.CMPA.half.CMPA = 3750;
 
-   EPwm3Regs.CMPCTL.bit.SHDWAMODE = CC_SHADOW;       // ¥”“ı”∞ºƒ¥Ê∆˜‘ÿ»Î±»Ωœ÷µ
-   EPwm3Regs.CMPCTL.bit.SHDWBMODE = CC_SHADOW;       // ¥”“ı”∞ºƒ¥Ê∆˜‘ÿ»Î±»Ωœ÷µ
-   EPwm3Regs.CMPCTL.bit.LOADAMODE = CC_CTR_ZERO;     // µ±CTR=Zero ±‘ÿ»Î
-   EPwm3Regs.CMPCTL.bit.LOADBMODE = CC_CTR_ZERO;     // µ±CTR=Zero ±‘ÿ»Î
-   EPwm3Regs.CMPA.half.CMPA = 3750;
 
-  
     /*****…Ë÷√Action-Qualifierºƒ¥Ê∆˜*****/
-   
-   EPwm3Regs.AQCTLA.bit.CAU = AQ_SET;                // ‘ˆº∆ ˝µΩCOMPA ±÷√∏ﬂµÁ∆Ω
-   EPwm3Regs.AQCTLA.bit.CAD = AQ_CLEAR;              // ºıº∆ ˝µΩCOMPA ±÷√µÕµÁ∆Ω
 
- 
-   /*****…Ë÷√Dead_Bandºƒ¥Ê∆˜*****/
-
-   EPwm3Regs.DBCTL.bit.OUT_MODE = DB_FULL_ENABLE;    // Dead_Bandºƒ¥Ê∆˜ ‰ˆµƒPWM3A°¢PWM3B∂º”–À¿«¯
-   EPwm3Regs.DBCTL.bit.IN_MODE = DBA_ALL;            // Dead_Bandºƒ¥Ê∆˜ ‰»Î ±PWM3A…œ…˝—ÿ∫Õœ¬Ωµ—ÿ∂º”–—”≥Ÿ
-   EPwm3Regs.DBCTL.bit.POLSEL = DB_ACTV_HIC;         // «–ªªEPWM3Bƒ£ Ω
- //  EPwm3Regs.DBFED = DB_PRD_UP;                             // …Ë∂®¬Ωµ—ÿÀ¿«¯ ±º‰
- //  EPwm3Regs.DBRED = DB_PRD_DOWN;                             // …Ë∂®…œ…˝—ÿÀ¿«¯ ±º‰
-
-   EPwm3Regs.DBFED = 1000;                             // …Ë∂®¬Ωµ—ÿÀ¿«¯ ±º‰
-   EPwm3Regs.DBRED = 1000;                             // …Ë∂®…œ…˝—ÿÀ¿«¯ ±º‰
-
-   EALLOW;
-
-   EPwm3Regs.TZCTL.bit.TZA = 2;
-   EPwm3Regs.TZCTL.bit.TZB = 2;
-
-   EPwm3Regs.TZFRC.bit.OST = 1;
-
-   EDIS;
+    EPwm3Regs.AQCTLA.bit.CAU = AQ_SET;                // ‘ˆº∆ ˝µΩCOMPA ±÷√∏ﬂµÁ∆Ω
+    EPwm3Regs.AQCTLA.bit.CAD = AQ_CLEAR;              // ºıº∆ ˝µΩCOMPA ±÷√µÕµÁ∆Ω
 
 
-  
+    /*****…Ë÷√Dead_Bandºƒ¥Ê∆˜*****/
+
+    EPwm3Regs.DBCTL.bit.OUT_MODE = DB_FULL_ENABLE;    // Dead_Bandºƒ¥Ê∆˜ ‰ˆµƒPWM3A°¢PWM3B∂º”–À¿«¯
+    EPwm3Regs.DBCTL.bit.IN_MODE = DBA_ALL;            // Dead_Bandºƒ¥Ê∆˜ ‰»Î ±PWM3A…œ…˝—ÿ∫Õœ¬Ωµ—ÿ∂º”–—”≥Ÿ
+    EPwm3Regs.DBCTL.bit.POLSEL = DB_ACTV_HIC;         // «–ªªEPWM3Bƒ£ Ω
+    //  EPwm3Regs.DBFED = DB_PRD_UP;                             // …Ë∂®¬Ωµ—ÿÀ¿«? ±º‰
+    //  EPwm3Regs.DBRED = DB_PRD_DOWN;                             // …Ë∂®…œ…˝—ÿÀ¿«¯ ±º‰
+
+    EPwm3Regs.DBFED = 1000;                             // …Ë∂®¬Ωµ—ÿÀ¿«? ±º‰
+    EPwm3Regs.DBRED = 1000;                             // …Ë∂®…œ…˝—ÿÀ¿«¯ ±º‰
+
+    EALLOW;
+
+    EPwm3Regs.TZCTL.bit.TZA = 2;
+    EPwm3Regs.TZCTL.bit.TZB = 2;
+
+    EPwm3Regs.TZFRC.bit.OST = 1;
+
+    EDIS;
 }
-void InitEPwm4(void)
+
+
+static void InitEPwm4(void)
 {
-	  /******…Ë÷√Time_Baseºƒ¥Ê∆˜******/
+    /******…Ë÷√Time_Baseºƒ¥Ê∆˜******/
 
-   EPwm4Regs.TBPRD = 937;                         //  150000 / 937 = 160kHz  base
-   EPwm4Regs.TBPHS.half.TBPHS = 0x0000;            // …Ë÷√œ‡ŒªŒ™0
-   EPwm4Regs.TBCTR = 0x0000;                      // «Â¡„º∆ ˝∆˜
-   EPwm4Regs.TBCTL.bit.CTRMODE = TB_COUNT_UP;     // »˝Ω«≤®
-   EPwm4Regs.TBCTL.bit.PRDLD = TB_SHADOW;      
-   EPwm4Regs.TBCTL.bit.SYNCOSEL = TB_SYNC_IN;     
-   EPwm4Regs.TBCTL.bit.PHSEN = TB_DISABLE;        
-   EPwm4Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;       // ∏ﬂÀŸ ±÷”∑÷∆µ
-   EPwm4Regs.TBCTL.bit.CLKDIV = TB_DIV1;          //  ±÷”∑÷∆µTBCLK = SYSCLKOUT / (HSPCLKDIV*CLKDIV)
+    EPwm4Regs.TBPRD = 937;                         //  150000 / 937 = 160kHz  base
+    EPwm4Regs.TBPHS.half.TBPHS = 0x0000;            // …Ë÷√œ‡ŒªŒ™0
+    EPwm4Regs.TBCTR = 0x0000;                      // «Â¡„º∆ ˝∆˜
+    EPwm4Regs.TBCTL.bit.CTRMODE = TB_COUNT_UP;     // »˝Ω«≤®
+    EPwm4Regs.TBCTL.bit.PRDLD = TB_SHADOW;      
+    EPwm4Regs.TBCTL.bit.SYNCOSEL = TB_SYNC_IN;     
+    EPwm4Regs.TBCTL.bit.PHSEN = TB_DISABLE;        
+    EPwm4Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;       // ∏ﬂÀŸ ±÷”∑÷∆µ
+    EPwm4Regs.TBCTL.bit.CLKDIV = TB_DIV1;          //  ±÷”∑÷∆µTBCLK = SYSCLKOUT / (HSPCLKDIV*CLKDIV)
 
-   /*****…Ë÷√Counter-Compareºƒ¥Ê∆˜*****/
+    /*****…Ë÷√Counter-Compareºƒ¥Ê∆˜*****/
 
-   EPwm4Regs.CMPCTL.bit.SHDWAMODE = CC_SHADOW;      
-   EPwm4Regs.CMPCTL.bit.LOADAMODE = CC_CTR_PRD;    
-   EPwm4Regs.CMPA.half.CMPA = 0;
+    EPwm4Regs.CMPCTL.bit.SHDWAMODE = CC_SHADOW;      
+    EPwm4Regs.CMPCTL.bit.LOADAMODE = CC_CTR_PRD;    
+    EPwm4Regs.CMPA.half.CMPA = 0;
 
-   EPwm4Regs.CMPCTL.bit.SHDWBMODE = CC_SHADOW;      
-   EPwm4Regs.CMPCTL.bit.LOADBMODE = CC_CTR_PRD;
-   EPwm4Regs.CMPB = 0;
-  
+    EPwm4Regs.CMPCTL.bit.SHDWBMODE = CC_SHADOW;      
+    EPwm4Regs.CMPCTL.bit.LOADBMODE = CC_CTR_PRD;
+    EPwm4Regs.CMPB = 0;
+
     /*****…Ë÷√Action-Qualifierºƒ¥Ê∆˜*****/
-   
-   EPwm4Regs.AQCTLA.bit.ZRO = AQ_SET;               
-   EPwm4Regs.AQCTLA.bit.CAU = AQ_CLEAR;    
-   
-   
-            
+
+    EPwm4Regs.AQCTLA.bit.ZRO = AQ_SET;               
+    EPwm4Regs.AQCTLA.bit.CAU = AQ_CLEAR;    
 }
 
-void InitEPwm5(void)
+static void InitEPwm5(void)
 {
-	  /******…Ë÷√Time_Baseºƒ¥Ê∆˜******/
+    /******…Ë÷√Time_Baseºƒ¥Ê∆˜******/
 
-   EPwm5Regs.TBPRD = EPWM3_TIMER_TBPRD;           // …Ë÷√º∆ ˝∆˜µƒ÷‹∆⁄
-   EPwm5Regs.TBPHS.half.TBPHS = 0x0000;            // …Ë÷√œ‡ŒªŒ™0
-   EPwm5Regs.TBCTR = 0x0000;                      // «Â¡„º∆ ˝∆˜
-   EPwm5Regs.TBCTL.bit.CTRMODE = TB_COUNT_UPDOWN; // ≤˙…˙∂‘≥∆≤®–Œµƒƒ£ Ω
-   EPwm5Regs.TBCTL.bit.PRDLD = TB_SHADOW;         // Õ®π˝“ı”∞ºƒ¥Ê∆˜∑√Œ 
-   EPwm5Regs.TBCTL.bit.SYNCOSEL = TB_SYNC_IN;     // »∑∂®EPWM3µƒÕ¨≤Ω ±÷” ‰»Î£¨EPWM2SYNC
-   EPwm5Regs.TBCTL.bit.PHSEN = TB_DISABLE;         //  πƒ‹œ‡Œª‘ÿ»Î
-   EPwm5Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;       // ∏ﬂÀŸ ±÷”∑÷∆µ
-   EPwm5Regs.TBCTL.bit.CLKDIV = TB_DIV1;          //  ±÷”∑÷∆µTBCLK = SYSCLKOUT / (HSPCLKDIV*CLKDIV)
+    EPwm5Regs.TBPRD = EPWM3_TIMER_TBPRD;           // …Ë÷√º∆ ˝∆˜µƒ÷‹∆⁄
+    EPwm5Regs.TBPHS.half.TBPHS = 0x0000;            // …Ë÷√œ‡ŒªŒ™0
+    EPwm5Regs.TBCTR = 0x0000;                      // «Â¡„º∆ ˝∆˜
+    EPwm5Regs.TBCTL.bit.CTRMODE = TB_COUNT_UPDOWN; // ≤˙…˙∂‘≥∆≤®–Œµƒƒ£ Ω
+    EPwm5Regs.TBCTL.bit.PRDLD = TB_SHADOW;         // Õ®π˝“ı”∞ºƒ¥Ê∆˜∑√Œ 
+    EPwm5Regs.TBCTL.bit.SYNCOSEL = TB_SYNC_IN;     // »∑∂®EPWM3µƒÕ¨≤Ω ±÷” ‰»Î£¨EPWM2SYNC
+    EPwm5Regs.TBCTL.bit.PHSEN = TB_DISABLE;         //  πƒ‹œ‡Œª‘ÿ»Î
+    EPwm5Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;       // ∏ﬂÀŸ ±÷”∑÷∆µ
+    EPwm5Regs.TBCTL.bit.CLKDIV = TB_DIV1;          //  ±÷”∑÷∆µTBCLK = SYSCLKOUT / (HSPCLKDIV*CLKDIV)
 
-   /*****…Ë÷√Counter-Compareºƒ¥Ê∆˜*****/
+    /*****…Ë÷√Counter-Compareºƒ¥Ê∆˜*****/
 
-   EPwm5Regs.CMPCTL.bit.SHDWAMODE = CC_SHADOW;       // ¥”“ı∞ºƒ¥Ê∆˜‘ÿ»Î±»Ωœ÷µ
-   EPwm5Regs.CMPCTL.bit.SHDWBMODE = CC_SHADOW;       // ¥”“ı”∞ºƒ¥Ê∆˜‘ÿ»Î»Ωœ÷µ
-   EPwm5Regs.CMPCTL.bit.LOADAMODE = CC_CTR_ZERO;     // µ±CTR=Zero ±‘ÿ»Î
-   EPwm5Regs.CMPCTL.bit.LOADBMODE = CC_CTR_ZERO;     // µ±CTR=Zero ±‘ÿ»Î
-   EPwm5Regs.CMPA.half.CMPA = EPWM3_TIMER_TBPRD;
+    EPwm5Regs.CMPCTL.bit.SHDWAMODE = CC_SHADOW;       // ¥”“ı∞ºƒ¥Ê∆˜‘ÿ»Î±»Ωœ÷?
+    EPwm5Regs.CMPCTL.bit.SHDWBMODE = CC_SHADOW;       // ¥”“ı”∞ºƒ¥Ê∆˜‘ÿ»Î»Ωœ÷?
+    EPwm5Regs.CMPCTL.bit.LOADAMODE = CC_CTR_ZERO;     // µ±CTR=Zero ±‘ÿ»Î
+    EPwm5Regs.CMPCTL.bit.LOADBMODE = CC_CTR_ZERO;     // µ±CTR=Zero ±‘ÿ»Î
+    EPwm5Regs.CMPA.half.CMPA = EPWM3_TIMER_TBPRD;
 
-  
+
     /*****…Ë÷√Action-Qualifierºƒ¥Ê∆˜*****/
-   
-   EPwm5Regs.AQCTLA.bit.CAU = AQ_SET;                // ‘ˆº∆ ˝µΩCOMPA ±÷√∏ﬂµÁ∆Ω
-   EPwm5Regs.AQCTLA.bit.CAD = AQ_CLEAR;              // ºıº∆ ˝µΩCOMPA ±÷√µÕµÁ∆Ω
 
- 
-
+    EPwm5Regs.AQCTLA.bit.CAU = AQ_SET;                // ‘ˆº∆ ˝µΩCOMPA ±÷√∏ﬂµÁ∆Ω
+    EPwm5Regs.AQCTLA.bit.CAD = AQ_CLEAR;              // ºıº∆ ˝µΩCOMPA ±÷√µÕµÁ∆Ω
 }
 
-void InitEPwm6(void)
+static void InitEPwm6(void)
 {
-	  /******…Ë÷√Time_Baseºƒ¥Ê∆˜******/
+    /******…Ë÷√Time_Baseºƒ¥Ê∆˜******/
 
-   EPwm6Regs.TBPRD = 937;                         //  150000 / 937 = 160kHz  base
-   EPwm6Regs.TBPHS.half.TBPHS = 0x0000;            // …Ë÷√œ‡ŒªŒ™0
-   EPwm6Regs.TBCTR = 0x0000;                      // «Â¡„º∆ ˝∆˜
-   EPwm6Regs.TBCTL.bit.CTRMODE = TB_COUNT_UP;     // »˝Ω«≤®
-   EPwm6Regs.TBCTL.bit.PRDLD = TB_SHADOW;      
-   EPwm6Regs.TBCTL.bit.SYNCOSEL = TB_SYNC_IN;     
-   EPwm6Regs.TBCTL.bit.PHSEN = TB_DISABLE;        
-   EPwm6Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;       // ∏ﬂÀŸ ±÷”∑÷∆µ
-   EPwm6Regs.TBCTL.bit.CLKDIV = TB_DIV1;          //  ±÷”∑÷∆µTBCLK = SYSCLKOUT / (HSPCLKDIV*CLKDIV)
+    EPwm6Regs.TBPRD = 937;                         //  150000 / 937 = 160kHz  base
+    EPwm6Regs.TBPHS.half.TBPHS = 0x0000;            // …Ë÷√œ‡ŒªŒ™0
+    EPwm6Regs.TBCTR = 0x0000;                      // «Â¡„º∆ ˝∆˜
+    EPwm6Regs.TBCTL.bit.CTRMODE = TB_COUNT_UP;     // »˝Ω«≤®
+    EPwm6Regs.TBCTL.bit.PRDLD = TB_SHADOW;      
+    EPwm6Regs.TBCTL.bit.SYNCOSEL = TB_SYNC_IN;     
+    EPwm6Regs.TBCTL.bit.PHSEN = TB_DISABLE;        
+    EPwm6Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;       // ∏ﬂÀŸ ±÷”∑÷∆µ
+    EPwm6Regs.TBCTL.bit.CLKDIV = TB_DIV1;          //  ±÷”∑÷∆µTBCLK = SYSCLKOUT / (HSPCLKDIV*CLKDIV)
 
-   /*****…Ë÷√Counter-Compareºƒ¥Ê∆˜*****/
+    /*****…Ë÷√Counter-Compareºƒ¥Ê∆˜*****/
 
-   EPwm6Regs.CMPCTL.bit.SHDWAMODE = CC_SHADOW;      
-   EPwm6Regs.CMPCTL.bit.LOADAMODE = CC_CTR_PRD; 
-      
-   EPwm6Regs.CMPA.half.CMPA = 600;
+    EPwm6Regs.CMPCTL.bit.SHDWAMODE = CC_SHADOW;      
+    EPwm6Regs.CMPCTL.bit.LOADAMODE = CC_CTR_PRD; 
 
-   EPwm6Regs.CMPCTL.bit.SHDWBMODE = CC_SHADOW;      
-   EPwm6Regs.CMPCTL.bit.LOADBMODE = CC_CTR_PRD;
-   EPwm6Regs.CMPB = 0;
-  
+    EPwm6Regs.CMPA.half.CMPA = 600;
+
+    EPwm6Regs.CMPCTL.bit.SHDWBMODE = CC_SHADOW;      
+    EPwm6Regs.CMPCTL.bit.LOADBMODE = CC_CTR_PRD;
+    EPwm6Regs.CMPB = 0;
+
     /*****…Ë÷√Action-Qualifierºƒ¥Ê∆˜*****/
-   
-   EPwm6Regs.AQCTLA.bit.ZRO = AQ_NO_ACTION;               
-   EPwm6Regs.AQCTLA.bit.CAU = AQ_NO_ACTION;    
-   
-   
-   EPwm6Regs.AQCTLB.bit.ZRO = AQ_NO_ACTION;               
-   EPwm6Regs.AQCTLB.bit.CAU = AQ_NO_ACTION;
-   EPwm6Regs.AQCTLB.bit.PRD = AQ_NO_ACTION; 
 
- 
+    EPwm6Regs.AQCTLA.bit.ZRO = AQ_NO_ACTION;               
+    EPwm6Regs.AQCTLA.bit.CAU = AQ_NO_ACTION;    
 
-	// Configure SOC for ADC with CMPA UP event of EPWM6
-   EPwm6Regs.ETSEL.bit.SOCAEN  = 1;             /* Enable SOCA */
-   EPwm6Regs.ETSEL.bit.SOCASEL = ET_CTRU_CMPA;  /* Enable CMPA UP event for SOCA */
-   EPwm6Regs.ETPS.bit.SOCAPRD  = ET_1ST;        /* Generate SOCA on the 1st event */
-   EPwm6Regs.ETCLR.bit.SOCA    = 1;             /* Clear SOCA flag */
 
-//   Enable EPWM6 interrupt        //
+    EPwm6Regs.AQCTLB.bit.ZRO = AQ_NO_ACTION;               
+    EPwm6Regs.AQCTLB.bit.CAU = AQ_NO_ACTION;
+    EPwm6Regs.AQCTLB.bit.PRD = AQ_NO_ACTION; 
 
-   EPwm6Regs.ETSEL.bit.INTEN  = 1;             // Enable EPWM1INT generation 
-   EPwm6Regs.ETSEL.bit.INTSEL = ET_CTR_PRD;    // Enable interrupt CNT_PRD event
-   EPwm6Regs.ETPS.bit.INTPRD  = 1;             // Generate interrupt on the 1st event
-   EPwm6Regs.ETCLR.bit.INT    = 1;             // Enable more interrupts
+    // Configure SOC for ADC with CMPA UP event of EPWM6
+    EPwm6Regs.ETSEL.bit.SOCAEN  = 1;             /* Enable SOCA */
+    EPwm6Regs.ETSEL.bit.SOCASEL = ET_CTRU_CMPA;  /* Enable CMPA UP event for SOCA */
+    EPwm6Regs.ETPS.bit.SOCAPRD  = ET_1ST;        /* Generate SOCA on the 1st event */
+    EPwm6Regs.ETCLR.bit.SOCA    = 1;             /* Clear SOCA flag */
 
-  
-            
+    //   Enable EPWM6 interrupt        //
+
+    EPwm6Regs.ETSEL.bit.INTEN  = 1;             // Enable EPWM1INT generation 
+    EPwm6Regs.ETSEL.bit.INTSEL = ET_CTR_PRD;    // Enable interrupt CNT_PRD event
+    EPwm6Regs.ETPS.bit.INTPRD  = 1;             // Generate interrupt on the 1st event
+    EPwm6Regs.ETCLR.bit.INT    = 1;             // Enable more interrupts          
 }
 
+/* 1-3 4/6∆µ¬ ≤ªÕ¨ 
 
-
+    123”√”⁄µÁª˙
+    4 Pwm_sin
+    5
+    6 Œﬁ ‰≥ˆ“˝Ω≈
+*/
 void Initial_PWM(void)
 {
-	EALLOW;
+    EALLOW;
     SysCtrlRegs.PCLKCR0.bit.TBCLKSYNC = 0;
     EDIS;
 
@@ -870,16 +1126,13 @@ void Initial_PWM(void)
     InitEPwm2();
     InitEPwm3();
     InitEPwm4();
-	InitEPwm5();
-	InitEPwm6();
+    InitEPwm5();
+    InitEPwm6();
 
-	EALLOW;
+    EALLOW;
     SysCtrlRegs.PCLKCR0.bit.TBCLKSYNC = 1;         // open PWM clock
     EDIS;
-
-
 }
-
 
 
 
@@ -893,8 +1146,8 @@ void Initial_CAN(void)
 
 void Initial_CANa(void)
 {
-	struct ECAN_REGS ECanaShadow;
-	EALLOW;		// EALLOW enables access to protected bits
+    struct ECAN_REGS ECanaShadow;
+    EALLOW;		// EALLOW enables access to protected bits
 
 /* Configure eCAN RX and TX pins for CAN operation using eCAN regs*/  
     //IOøÿ÷∆ºƒ¥Ê
@@ -907,12 +1160,12 @@ void Initial_CANa(void)
     ECanaRegs.CANRIOC.all = ECanaShadow.CANRIOC.all; //£¨Ω´IOø⁄≈‰÷√≥…CANΩ”ø⁄
 
 /* Configure eCAN for HECC mode - (reqd to access mailboxes 16 thru 31) */
-									// HECC mode also enables time-stamping feature
+                                    // HECC mode also enables time-stamping feature
    //÷˜øÿ÷∆ºƒ¥Ê∆˜
-	ECanaShadow.CANMC.all = ECanaRegs.CANMC.all;
-	ECanaShadow.CANMC.bit.SCB = 1;  //—°‘ÒeCANƒ£ Ω,∂¯≤ª «SCCƒ£ Ω
+    ECanaShadow.CANMC.all = ECanaRegs.CANMC.all;
+    ECanaShadow.CANMC.bit.SCB = 1;  //—°‘ÒeCANƒ£ Ω,∂¯≤ª «SCCƒ£ Ω
 //	ECanaShadow.CANMC.bit.DBO=1;     //œ»∑¢µÕ◊÷Ω⁄
-	ECanaRegs.CANMC.all = ECanaShadow.CANMC.all;
+    ECanaRegs.CANMC.all = ECanaShadow.CANMC.all;
 
 /* Initialize all bits of 'Master Control Field' to zero */
 // Some bits of MSGCTRL register come up in an unknown state. For proper operation,
@@ -953,19 +1206,19 @@ void Initial_CANa(void)
 
 // TAn, RMPn, GIFn bits are all zero upon reset and are cleared again
 //	as a matter of precaution.
-    //∑¢ÀÕ”¶¥ºƒÊ∆˜
-	ECanaRegs.CANTA.all	= 0xFFFFFFFF;	/* Clear all TAn bits */
-    //Ω” ’˚œ¢π“∆ºƒ¥Ê∆˜
-	ECanaRegs.CANRMP.all = 0xFFFFFFFF;	/* Clear all RMPn bits */
+    //∑¢ÀÕ”¶¥ºƒÊ∆?
+    ECanaRegs.CANTA.all	= 0xFFFFFFFF;	/* Clear all TAn bits */
+    //Ω” ’?œ¢π“∆ºƒ¥Ê∆˜
+    ECanaRegs.CANRMP.all = 0xFFFFFFFF;	/* Clear all RMPn bits */
     //»´æ÷÷–∂œ±Í÷æºƒ¥Ê∆˜
-	ECanaRegs.CANGIF0.all = 0xFFFFFFFF;	/* Clear all interrupt flag bits */
-	ECanaRegs.CANGIF1.all = 0xFFFFFFFF;
+    ECanaRegs.CANGIF0.all = 0xFFFFFFFF;	/* Clear all interrupt flag bits */
+    ECanaRegs.CANGIF1.all = 0xFFFFFFFF;
 
 
 /* Configure bit timing parameters for eCANA*/
    //÷˜øÿ÷∆ºƒ¥Ê∆˜
-	ECanaShadow.CANMC.all = ECanaRegs.CANMC.all;
-	ECanaShadow.CANMC.bit.CCR = 1 ;            // Set CCR = 1£¨÷√CANBTC
+    ECanaShadow.CANMC.all = ECanaRegs.CANMC.all;
+    ECanaShadow.CANMC.bit.CCR = 1 ;            // Set CCR = 1£¨÷√CANBTC
     ECanaRegs.CANMC.all = ECanaShadow.CANMC.all;
   
   
@@ -973,26 +1226,26 @@ void Initial_CANa(void)
     ECanaShadow.CANES.all = ECanaRegs.CANES.all;
 
     do
-	{
-	    ECanaShadow.CANES.all = ECanaRegs.CANES.all;
-    } while(ECanaShadow.CANES.bit.CCE != 1 );  		// Wait for CCE bit to be set..ø…“‘–¥ƒ¥Ê∆˜
+    {
+        ECanaShadow.CANES.all = ECanaRegs.CANES.all;
+    } while(ECanaShadow.CANES.bit.CCE != 1 );  		// Wait for CCE bit to be set..ø…“‘–¥ƒ¥Ê∆?
  
    
   //Œª ±‰≈‰÷ºƒ¥Ê∆˜   
     ECanaShadow.CANBTC.all = 0;
 
                           // CPU_FRQ_100MHz is defined in DSP2833x_Examples.h
-	/* The following block is only for 100 MHz SYSCLKOUT. Bit rate = 1Mbps */
-	    ECanaShadow.CANBTC.bit.BRPREG = 4;
-		ECanaShadow.CANBTC.bit.TSEG2REG = 2;
-		ECanaShadow.CANBTC.bit.TSEG1REG = 10;
-	//≤®Ãÿ¬ =150M/2/((4+1)*((2+1)+(10+1)+1))=1M
+    /* The following block is only for 100 MHz SYSCLKOUT. Bit rate = 1Mbps */
+        ECanaShadow.CANBTC.bit.BRPREG = 4;
+        ECanaShadow.CANBTC.bit.TSEG2REG = 2;
+        ECanaShadow.CANBTC.bit.TSEG1REG = 10;
+    //≤®Ãÿ¬ =150M/2/((4+1)*((2+1)+(10+1)+1))=1M
 
     ECanaShadow.CANBTC.bit.SAM = 1;    //√øŒª ˝æ›≤…—˘3¥Œ
     ECanaRegs.CANBTC.all = ECanaShadow.CANBTC.all;
 
     ECanaShadow.CANMC.all = ECanaRegs.CANMC.all;
-	ECanaShadow.CANMC.bit.CCR = 0 ;            // Set CCR = 0£¨ÕÍ≥…≈‰÷√CANBTC
+    ECanaShadow.CANMC.bit.CCR = 0 ;            // Set CCR = 0£¨ÕÍ≥…≈‰÷√CANBTC
     ECanaRegs.CANMC.all = ECanaShadow.CANMC.all;
 
    //¥ÌŒÛ∫Õ◊¥Ã¨ºƒ¥Ê∆˜
@@ -1004,7 +1257,7 @@ void Initial_CANa(void)
     } while(ECanaShadow.CANES.bit.CCE != 0 ); 		// Wait for CCE bit to be  cleared..Ω˚÷π–¥ºƒ¥Ê∆˜
 
 /* Disable all Mailboxes  */
- 	ECanaRegs.CANME.all = 0;		///Required before writing the MSGIDs
+     ECanaRegs.CANME.all = 0;		///Required before writing the MSGIDs
 
 
     EDIS;
@@ -1035,10 +1288,10 @@ struct ECAN_REGS ECanbShadow;
 
 /* Configure eCAN for HECC mode - (reqd to access mailboxes 16 thru 31) */
 
-	ECanbShadow.CANMC.all = ECanbRegs.CANMC.all;
-	ECanbShadow.CANMC.bit.SCB = 1;
+    ECanbShadow.CANMC.all = ECanbRegs.CANMC.all;
+    ECanbShadow.CANMC.bit.SCB = 1;
 //	ECanbShadow.CANMC.bit.DBO=1;     //œ»∑¢µÕ◊÷Ω⁄
-	ECanbRegs.CANMC.all = ECanbShadow.CANMC.all;
+    ECanbRegs.CANMC.all = ECanbShadow.CANMC.all;
 
 /* Initialize all bits of 'Master Control Field' to zero */
 // Some bits of MSGCTRL register come up in an unknown state. For proper operation,
@@ -1080,42 +1333,42 @@ struct ECAN_REGS ECanbShadow;
 // TAn, RMPn, GIFn bits are all zero upon reset and are cleared again
 //	as a matter of precaution.
 
-	ECanbRegs.CANTA.all	= 0xFFFFFFFF;	/* Clear all TAn bits */
+    ECanbRegs.CANTA.all	= 0xFFFFFFFF;	/* Clear all TAn bits */
 
-	ECanbRegs.CANRMP.all = 0xFFFFFFFF;	/* Clear all RMPn bits */
+    ECanbRegs.CANRMP.all = 0xFFFFFFFF;	/* Clear all RMPn bits */
 
-	ECanbRegs.CANGIF0.all = 0xFFFFFFFF;	/* Clear all interrupt flag bits */
-	ECanbRegs.CANGIF1.all = 0xFFFFFFFF;
+    ECanbRegs.CANGIF0.all = 0xFFFFFFFF;	/* Clear all interrupt flag bits */
+    ECanbRegs.CANGIF1.all = 0xFFFFFFFF;
 
 
 /* Configure bit timing parameters for eCANB*/
 
-	ECanbShadow.CANMC.all = ECanbRegs.CANMC.all;
-	ECanbShadow.CANMC.bit.CCR = 1 ;            // Set CCR = 1
+    ECanbShadow.CANMC.all = ECanbRegs.CANMC.all;
+    ECanbShadow.CANMC.bit.CCR = 1 ;            // Set CCR = 1
     ECanbRegs.CANMC.all = ECanbShadow.CANMC.all;
 
     ECanbShadow.CANES.all = ECanbRegs.CANES.all;
 
     do
-	{
-	    ECanbShadow.CANES.all = ECanbRegs.CANES.all;
-	} while(ECanbShadow.CANES.bit.CCE != 1 ); 		// Wait for CCE bit to be  cleared..
+    {
+        ECanbShadow.CANES.all = ECanbRegs.CANES.all;
+    } while(ECanbShadow.CANES.bit.CCE != 1 ); 		// Wait for CCE bit to be  cleared..
 
 
     ECanbShadow.CANBTC.all = 0;
 
    
-	/* The following block for all 150 MHz SYSCLKOUT - default. Bit rate = 1 Mbps */
-		ECanbShadow.CANBTC.bit.BRPREG = 4;
-		ECanbShadow.CANBTC.bit.TSEG2REG = 2;
-		ECanbShadow.CANBTC.bit.TSEG1REG = 10;
+    /* The following block for all 150 MHz SYSCLKOUT - default. Bit rate = 1 Mbps */
+        ECanbShadow.CANBTC.bit.BRPREG = 4;
+        ECanbShadow.CANBTC.bit.TSEG2REG = 2;
+        ECanbShadow.CANBTC.bit.TSEG1REG = 10;
 
 
     ECanbShadow.CANBTC.bit.SAM = 1;
     ECanbRegs.CANBTC.all = ECanbShadow.CANBTC.all;
 
     ECanbShadow.CANMC.all = ECanbRegs.CANMC.all;
-	ECanbShadow.CANMC.bit.CCR = 0 ;            // Set CCR = 0
+    ECanbShadow.CANMC.bit.CCR = 0 ;            // Set CCR = 0
     ECanbRegs.CANMC.all = ECanbShadow.CANMC.all;
 
     ECanbShadow.CANES.all = ECanbRegs.CANES.all;
@@ -1127,7 +1380,7 @@ struct ECAN_REGS ECanbShadow;
 
 
 /* Disable all Mailboxes  */
- 	ECanbRegs.CANME.all = 0;		// Required before writing the MSGIDs
+     ECanbRegs.CANME.all = 0;		// Required before writing the MSGIDs
 
     EDIS;
 }
@@ -1138,7 +1391,7 @@ void I2CA_Init(void)
 {
    // Initialize I2C
    I2caRegs.I2CMDR.all = 0x0000;	// Take I2C reset
-   									// Stop I2C when suspended
+                                       // Stop I2C when suspended
 
    I2caRegs.I2CFFTX.all = 0x0000;	// Transmit FIFO Register£¨Disable FIFO mode and TXFIFO  
    I2caRegs.I2CFFRX.all = 0x0000;	//I2C Receive FIFO Register£¨ Disable RXFIFO, clear RXFFINT,  0x0040
@@ -1151,7 +1404,7 @@ void I2CA_Init(void)
    I2caRegs.I2CIER.all = 0x0018;	    	//I2C Interrupt Enable Register, enable XRDY & RRDY interrupts essential
 
    I2caRegs.I2CMDR.all = 0x0020;	// Take I2C out of reset
-   									// Stop I2C when suspended
+                                       // Stop I2C when suspended
 
 //   I2caRegs.I2CFFTX.all = 0x7000;	// Enable FIFO mode and TXFIFO
 //   I2caRegs.I2CFFRX.all = 0x3000;	// Enable RXFIFO, clear RXFFINT,
@@ -1166,407 +1419,105 @@ void Initial_SCIc(void)
     // Note: Clocks were turned on to the SCIC peripheral
     // in the InitSysCtrl() function
 
- 	ScicRegs.SCICCR.all =0x0007;   //Õ®—∂øÿ÷∆ºƒ¥Ê∆˜ 0000 0000 0000 0111
- 	                               //“ª∏ˆÕ£÷πŒª£ª∆Ê–£—È£ª∆Ê≈º–£—ÈΩ˚”√£ª◊‘≤‚ ‘ƒ£ ΩΩ˚”√£ªø’œ–œﬂƒ£ Ω£ª8◊÷Ω⁄ ˝æ›£ª
- 	                               //1 stop bit,  No loopback
+     ScicRegs.SCICCR.all =0x0007;   //Õ®—∂øÿ÷∆ºƒ¥Ê∆˜ 0000 0000 0000 0111
+                                    //“ª∏ˆÕ£÷πŒª£ª∆Ê–£—È£ª∆Ê≈º–£—ÈΩ˚”√£ª◊‘≤‚ ‘ƒ£ ΩΩ˚”√£ªø’œ–œﬂƒ£ Ω£ª8◊÷Ω⁄ ˝æ›£ª
+                                    //1 stop bit,  No loopback
                                    // No parity,8 char bits,
                                    // async mode, idle-line protocol
-	ScicRegs.SCICTL1.all =0x0003;  //øÿ÷∆ºƒ¥Ê∆˜1 0000 0000 0000 0011 
-								   //Ω” ’¥ÌŒÛ÷–∂œΩ˚”√£ª¢ÀÕÃÿ’˜Œ¥—°‘Ò£ª–›√ﬂƒ£ ΩΩ˚”√£ πƒ‹∑¢ÀÕ∫ÕΩ” ’˜£ª£ª
-	                               // enable TX, RX, internal SCICLK,
+    ScicRegs.SCICTL1.all =0x0003;  //øÿ÷∆ºƒ¥Ê∆˜1 0000 0000 0000 0011 
+                                   //Ω” ’¥ÌŒÛ÷–∂œΩ˚”√£ª¢ÀÕÃÿ’˜Œ¥—°‘Ò£ª–›√ﬂƒ£ ΩΩ?”√£ πƒ‹∑¢ÀÕ∫ÕΩ” ’˜£ª£ª
+                                   // enable TX, RX, internal SCICLK,
                                    // Disable RX ERR, SLEEP, TXWAKE
-	ScicRegs.SCICTL2.all =0x0003;  //øÿ÷∆ºƒ¥Ê∆˜2 0000 0000 0000 0011
-	ScicRegs.SCICTL2.bit.TXINTENA =1;// πƒ‹TXRDY÷–∂œ
-	ScicRegs.SCICTL2.bit.RXBKINTENA =1;// πƒ‹RXRDY/BRKDT÷–∂œ
+    ScicRegs.SCICTL2.all =0x0003;  //øÿ÷∆ºƒ¥Ê∆˜2 0000 0000 0000 0011
+    ScicRegs.SCICTL2.bit.TXINTENA =1;// πƒ‹TXRDY÷–∂œ
+    ScicRegs.SCICTL2.bit.RXBKINTENA =1;// πƒ‹RXRDY/BRKDT÷–∂œ
     ScicRegs.SCIHBAUD    =0x0000;//≤®Ãÿ¬ —°‘Òºƒ¥Ê∆˜ @LSPCLK = 37.5MHz 
     ScicRegs.SCILBAUD    =0x0012;//≤®Ãÿ¬  = 37.5M/8/(SCIBAUD+1) = 246710
-	ScicRegs.SCICTL1.all =0x0023;     //øÿ÷∆ºƒ¥Ê∆˜1 0000 0000 0010 0011
-									//Ìº˛∏¥ŒªŒª£¨µÕµÁ∆Ω”––ß£¨÷√∏ﬂ Relinquish SCI from Reset£ª
+    ScicRegs.SCICTL1.all =0x0023;     //øÿ÷∆ºƒ¥Ê∆˜1 0000 0000 0010 0011
+                                    //Ìº?∏¥ŒªŒª£¨µÕµÁ∆Ω”––ß£¨÷√∏ﬂ Relinquish SCI from Reset£ª
 // Initalize the SCI FIFO
     ScicRegs.SCIFFTX.bit.TXFIFOXRESET=0; //∑¢ÀÕFIFO∏¥Œª
     ScicRegs.SCIFFRX.bit.RXFIFORESET=0;  //Ω” ’FIFO∏¥Œª
 
     ScicRegs.SCIFFTX.all=0xE040;  // SCI FIFO∑¢ÀÕºƒ¥Ê∆˜ 1110 0000 0100 0000
-    ScicRegs.SCIFFRX.all=0x204f;  // SCI FIFOΩ”’ºƒ¥Ê∆˜ 0010 0000 0100 1111
-    ScicRegs.SCIFFCT.all=0x0;     //SCI FIFOøÿ÷∆ºƒ¥Ê∆˜ ˚÷π≤®Ãÿ¬ ◊‘∂Øµ˜’˚£ªFIFO¥´ÀÕ—”≥ŸŒ™0
+    ScicRegs.SCIFFRX.all=0x204f;  // SCI FIFOΩ”’ºƒ¥Ê∆? 0010 0000 0100 1111
+    ScicRegs.SCIFFCT.all=0x0;     //SCI FIFOøÿ÷∆ºƒ¥Ê∆˜ ?÷π≤®Ãÿ¬ ◊‘∂Øµ˜’˚£ªFIFO¥´ÀÕ—”≥ŸŒ™0
 }
-
-
-void InitXintf(void)
-{
-    // This shows how to write to the XINTF registers.  The
-    // values used here are the default state after reset.
-    // Different hardware will require a different configuration.
-
-    // For an example of an XINTF configuration used with the
-    // F28335 eZdsp, refer to the examples/run_from_xintf project.
-
-    // Any changes to XINTF timing should only be made by code
-    // running outside of the XINTF.
-
-    // All Zones---------------------------------
-    // Timing for all zones based on XTIMCLK = 1/2 SYSCLKOUT
-    EALLOW;
-    XintfRegs.XINTCNF2.bit.XTIMCLK = 1;//≈‰÷√ºƒ¥Ê∆˜  XTIMCLK = 1/2 SYSCLKOUT
-    
-    XintfRegs.XINTCNF2.bit.WRBUFF = 0;//0∏ˆ–¥ª∫≥Â…Ó∂»£¨ø…≈‰÷√Œ™0-3
-    
-    XintfRegs.XINTCNF2.bit.CLKOFF = 0;// πƒ‹XCLKOUT
-    
-    XintfRegs.XINTCNF2.bit.CLKMODE = 1;// XCLKOUT = XTIMCLK/2
-
-
-    // Zone 0------------------------------------
-    // When using ready, ACTIVE must be 1 or greater
-    // Lead must always be 1 or greater
-   
-    XintfRegs.XTIMING0.bit.XWRLEAD = 3;//–¥∑√Œ Ω®¡¢µ»¥˝3∏ˆXTIMCLK÷‹∆⁄
-    XintfRegs.XTIMING0.bit.XWRACTIVE = 4;//–¥∑√Œ º§ªÓµ»¥˝4∏ˆXTIMCLK÷‹∆⁄
-    XintfRegs.XTIMING0.bit.XWRTRAIL = 3;//–¥∑√Œ ∏˙◊Ÿµ»¥˝3∏ˆXTIMCLK÷‹∆⁄
-   
-    XintfRegs.XTIMING0.bit.XRDLEAD = 3;//∂¡∑√Œ Ω®¡¢µ»¥˝3∏ˆXTIMCLK÷‹∆⁄
-    XintfRegs.XTIMING0.bit.XRDACTIVE = 4;//¡∑√Œ º§ªÓµ»¥4∏ˆXTIMCLK÷‹∆⁄
-    XintfRegs.XTIMING0.bit.XRDTRAIL = 3;//∂¡∑√Œ ∏˙◊Ÿµ»¥˝3∏ˆXTIMCLK÷‹∆⁄
-
-    XintfRegs.XTIMING0.bit.X2TIMING = 0;//0/1:“ª/¡Ω±∂Ω®¡¢°¢º§ªÓ∫Õ∏˙◊Ÿµƒ ±º‰
-
-    XintfRegs.XTIMING0.bit.USEREADY = 1;//≤…—˘XREADY–≈∫≈ 
-    XintfRegs.XTIMING0.bit.READYMODE = 1;  // XREADY–≈∫≈“Ï≤Ω≤…—˘∑Ω Ω
-
-    XintfRegs.XTIMING0.bit.XSIZE = 3;//16Œª ˝æ›œﬂ£¨1±Ì æ32Œª˝æ›œﬂ
-
-    // Zone 6------------------------------------
-    // When using ready, ACTIVE must be 1 or greater
-    // Lead must always be 1 or greater
-    
-    XintfRegs.XTIMING6.bit.XWRLEAD = 3;
-    XintfRegs.XTIMING6.bit.XWRACTIVE = 4;
-    XintfRegs.XTIMING6.bit.XWRTRAIL = 3;
-    
-    XintfRegs.XTIMING6.bit.XRDLEAD = 3;
-    XintfRegs.XTIMING6.bit.XRDACTIVE = 4;
-    XintfRegs.XTIMING6.bit.XRDTRAIL = 3;
-
-    XintfRegs.XTIMING6.bit.X2TIMING = 0;
-
-    XintfRegs.XTIMING6.bit.USEREADY = 1;
-    XintfRegs.XTIMING6.bit.READYMODE = 1; 
-
-    XintfRegs.XTIMING6.bit.XSIZE = 3;
-
-    // Zone 7------------------------------------
-    // When using ready, ACTIVE must be 1 or greater
-    // Lead must always be 1 or greater
- 
-    XintfRegs.XTIMING7.bit.XWRLEAD = 3;
-    XintfRegs.XTIMING7.bit.XWRACTIVE = 4;
-    XintfRegs.XTIMING7.bit.XWRTRAIL = 3;
-    
-    XintfRegs.XTIMING7.bit.XRDLEAD = 3;
-    XintfRegs.XTIMING7.bit.XRDACTIVE = 4;
-    XintfRegs.XTIMING7.bit.XRDTRAIL = 3;
-
-    XintfRegs.XTIMING7.bit.X2TIMING = 0;
-
-    XintfRegs.XTIMING7.bit.USEREADY = 1;
-    XintfRegs.XTIMING7.bit.READYMODE = 1; 
-
-    XintfRegs.XTIMING7.bit.XSIZE = 3;
-
-    // Bank switching
-    // Assume Zone 7 is slow, so add additional BCYC cycles
-    // when ever switching from Zone 6 to another Zone.
-    // This will help avoid bus contention.
-    // Bank switching
-    // Assume Zone 6 is slow, so add additional BCYC cycles
-    // when ever switching from Zone 6 to another Zone.
-    // This will help avoid bus contention.
-   // XintfRegs.XBANK.bit.BANK = 6;// πƒ‹¥Ê¥¢∆˜«¯”Ú«–ªªπ¶ƒ‹
-   // XintfRegs.XBANK.bit.BCYC = 7;//¡¨–¯∑√Œ ≤Ÿ◊˜ ±÷–º‰µ»¥˝6∏ˆXTIMCLK÷‹∆⁄
-   // XintfRegs.XBANK.bit.BANK = 7;
-//    XintfRegs.XBANK.bit.BCYC = 7;
-    EDIS;
-   //Force a pipeline flush to ensure that the write to
-   //the last register configured occurs before returning.
-
-
-   asm(" RPT #7 || NOP");
-
-}
-
-void Initial_Gpio(void)//(“—∏ƒ)
-{
-	 EALLOW;
-
-//GPIO7,10,17,52,53,58-61Œ¥ π”√
-
-//GPIO0-GPIO5…Ë÷√Œ™¡˘¬∑PWM ‰≥ˆ
-     GpioCtrlRegs.GPAPUD.bit.GPIO0 = 0;    // Enable pull-up on GPIO0 (EPWM1A)
-     GpioCtrlRegs.GPAPUD.bit.GPIO1 = 0;    // Enable pull-up on GPIO1 (EPWM1B)   
-   
-     GpioCtrlRegs.GPAMUX1.bit.GPIO0 = 1;   // Configure GPIO0 as EPWM1A
-     GpioCtrlRegs.GPAMUX1.bit.GPIO1 = 1;   // Configure GPIO1 as EPWM1B
-
-     GpioCtrlRegs.GPAPUD.bit.GPIO2 = 0;    // Enable pull-up on GPIO2 (EPWM2A)
-     GpioCtrlRegs.GPAPUD.bit.GPIO3 = 0;    // Enable pull-up on GPIO3 (EPWM3B)
-
-     GpioCtrlRegs.GPAMUX1.bit.GPIO2 = 1;   // Configure GPIO2 as EPWM2A
-     GpioCtrlRegs.GPAMUX1.bit.GPIO3 = 1;   // Configure GPIO3 as EPWM2B
-
-     GpioCtrlRegs.GPAPUD.bit.GPIO4 = 0;    // Enable pull-up on GPIO4 (EPWM3A)
-     GpioCtrlRegs.GPAPUD.bit.GPIO5 = 0;    // Enable pull-up on GPIO5 (EPWM3B)
-
-     GpioCtrlRegs.GPAMUX1.bit.GPIO4 = 1;   // Configure GPIO4 as EPWM3A
-     GpioCtrlRegs.GPAMUX1.bit.GPIO5 = 1;   // Configure GPIO5 as EPWM3B
-
-     GpioCtrlRegs.GPAPUD.bit.GPIO6 = 1;    // DIS pull-up on GPIO6 (EPWM4A)
-     GpioCtrlRegs.GPAPUD.bit.GPIO7 = 1;    // DIS pull-up on GPIO7 (EPWM4B)
-
-     GpioCtrlRegs.GPAMUX1.bit.GPIO6 = 1;   // Configure GPIO6 as EPWM4A
-
-     GpioCtrlRegs.GPAMUX1.bit.GPIO7 = 0;   // Configure GPIO7 as GPIO
-	 GpioCtrlRegs.GPADIR.bit.GPIO7  = 1;
- 	 GpioDataRegs.GPADAT.bit.GPIO7 = 0;
-
-	 GpioCtrlRegs.GPAPUD.bit.GPIO8 = 1;    // DIS pull-up on GPIO8 (EPWM5A)
-     GpioCtrlRegs.GPAPUD.bit.GPIO9 = 1;    // DIS pull-up on GPIO9 (EPWM5B)
-
-     GpioCtrlRegs.GPAMUX1.bit.GPIO8 = 1;   // Configure GPIO8 as EPWM5A
-     GpioCtrlRegs.GPAMUX1.bit.GPIO9 = 1;   // Configure GPIO9 as EPWM5B
-
-
-	 GpioCtrlRegs.GPAPUD.bit.GPIO10 = 1;    // DIS pull-up on GPIO10 (EPWM6A)
-     GpioCtrlRegs.GPAPUD.bit.GPIO11 = 1;    // DIS pull-up on GPIO11 (EPWM6B)
-
-     GpioCtrlRegs.GPAMUX1.bit.GPIO10 = 1;   // Configure GPIO10 as EPWM6A
-     GpioCtrlRegs.GPAMUX1.bit.GPIO11 = 1;   // Configure GPIO11 as EPWM6B
-
-
-
-//  GPIO12~GPIO13  Œ¥ π”√ 
-
-
-//GPIO14∫ÕGPIO15…Ë÷√…XHOLD∫ÕXHOLDA	
-	 GpioCtrlRegs.GPAMUX1.bit.GPIO14 = 1;     //XHOLD
-	 GpioCtrlRegs.GPAMUX1.bit.GPIO15 = 1;     //XHOLDA 
-
-//GPIO16 GPIO17Œ¥ π”√   
-
-//GPIO18∫ÕGPIO19…Ë÷√≥…CANRXA∫ÕCANTXA
-
-	 GpioCtrlRegs.GPAPUD.bit.GPIO18 = 0;     //Enable pullup on
-	 GpioCtrlRegs.GPAPUD.bit.GPIO19 = 0;     //Enable pullup on
-
-	 GpioCtrlRegs.GPAQSEL2.bit.GPIO18 = 3;   // ‰»Î“Ï≤Ω£¨”√”⁄SCI£¨SPI£¨eCAN£¨I2C 
-	 GpioCtrlRegs.GPAMUX2.bit.GPIO18 = 3;     //CANRXA
-	 GpioCtrlRegs.GPAMUX2.bit.GPIO19 = 3;     //CANTXA  
-
-
-//GPIO20 ~ GPIO27Œ¥ π”√ 
-
-//GPIO32-GPIO33≈‰÷√SDAA∫ÕSCLA
-     GpioCtrlRegs.GPBPUD.bit.GPIO32 = 0;   // Enable pullup on GPIO32
-     GpioCtrlRegs.GPBMUX1.bit.GPIO32 = 1;  // GPIO32 = SDAA
-     GpioCtrlRegs.GPBQSEL1.bit.GPIO33 = 3; //  ‰»Î“Ï≤Ω£¨”√”⁄SCI£¨SPI£¨eCAN£¨I2C
-     GpioCtrlRegs.GPBPUD.bit.GPIO33 = 0;   // Enable pullup on GPIO33
-     GpioCtrlRegs.GPBQSEL1.bit.GPIO33 = 3; //  ‰»Î“Ï≤Ω£¨”√”⁄SCI£¨SPI£¨eCAN£¨I2C
-     GpioCtrlRegs.GPBMUX1.bit.GPIO33 = 1;  // GPIO33 = SCLA
-
-
-	 //  GPIO48 Œ¥ π”√
-
-	GpioCtrlRegs.GPBPUD.bit.GPIO49  = 0;                      // test port
-	GpioCtrlRegs.GPBMUX2.bit.GPIO49 = 0;
-	GpioCtrlRegs.GPBDIR.bit.GPIO49  = 1;
-	GpioDataRegs.GPBDAT.bit.GPIO49  = 0;
-	
-      
-	GpioCtrlRegs.GPBPUD.bit.GPIO51  = 1;                      // CAP 
-	GpioCtrlRegs.GPBMUX2.bit.GPIO51 = 0;
-	GpioCtrlRegs.GPBDIR.bit.GPIO51  = 1;
-	GpioDataRegs.GPBDAT.bit.GPIO51  = 0;
-
-
-	GpioCtrlRegs.GPBPUD.bit.GPIO52 = 0;   //Enalbe pullup        LED0
-	GpioCtrlRegs.GPBMUX2.bit.GPIO52 = 0;  //GPIO
-	GpioCtrlRegs.GPBDIR.bit.GPIO52 = 1;   //GPIO = output
-	GpioDataRegs.GPBCLEAR.bit.GPIO52 = 1;
-
-
-	GpioCtrlRegs.GPBPUD.bit.GPIO53 = 0;   //Enalbe pullup       LED1
-	GpioCtrlRegs.GPBMUX2.bit.GPIO53 = 0;  //GPIO
-	GpioCtrlRegs.GPBDIR.bit.GPIO53 = 1;   //GPIO = output
-	GpioDataRegs.GPBCLEAR.bit.GPIO53 = 1;
-
-	GpioCtrlRegs.GPBPUD.bit.GPIO54 = 0;   //Enalbe pullup       EN
-	GpioCtrlRegs.GPBMUX2.bit.GPIO54 = 0;  //GPIO
-	GpioCtrlRegs.GPBDIR.bit.GPIO54 = 1;   //GPIO = output
-	GpioDataRegs.GPBDAT.bit.GPIO54 = 1;
-
-	GpioCtrlRegs.GPBPUD.bit.GPIO55 = 0;   //Enalbe pullup       FPGA_RST
-	GpioCtrlRegs.GPBMUX2.bit.GPIO55 = 0;  //GPIO
-	GpioCtrlRegs.GPBDIR.bit.GPIO55 = 1;   //GPIO = output
-	GpioDataRegs.GPBDAT.bit.GPIO55 = 1;
-
-	GpioCtrlRegs.GPBPUD.bit.GPIO56 = 0;   //Enalbe pullup       BOX_LED
-	GpioCtrlRegs.GPBMUX2.bit.GPIO56 = 0;  //GPIO
-	GpioCtrlRegs.GPBDIR.bit.GPIO56 = 1;   //GPIO = output
-	GpioDataRegs.GPBDAT.bit.GPIO56 = 1;
-
-// GPIO57--GPIO63 Œ¥ π”√
-
-
-//GPIO28-GPIO31,GPIO34-GPIO47,GPIO64-GPIO87≈‰÷√Õ‚≤øΩ”ø⁄£®XINTF£©
-
-	 GpioCtrlRegs.GPCMUX1.bit.GPIO64 = 3;  // XD15
-     GpioCtrlRegs.GPCMUX1.bit.GPIO65 = 3;  // XD14
-     GpioCtrlRegs.GPCMUX1.bit.GPIO66 = 3;  // XD13
-     GpioCtrlRegs.GPCMUX1.bit.GPIO67 = 3;  // XD12
-     GpioCtrlRegs.GPCMUX1.bit.GPIO68 = 3;  // XD11
-     GpioCtrlRegs.GPCMUX1.bit.GPIO69 = 3;  // XD10
-     GpioCtrlRegs.GPCMUX1.bit.GPIO70 = 3;  // XD19
-     GpioCtrlRegs.GPCMUX1.bit.GPIO71 = 3;  // XD8
-     GpioCtrlRegs.GPCMUX1.bit.GPIO72 = 3;  // XD7
-     GpioCtrlRegs.GPCMUX1.bit.GPIO73 = 3;  // XD6
-     GpioCtrlRegs.GPCMUX1.bit.GPIO74 = 3;  // XD5
-     GpioCtrlRegs.GPCMUX1.bit.GPIO75 = 3;  // XD4
-     GpioCtrlRegs.GPCMUX1.bit.GPIO76 = 3;  // XD3
-     GpioCtrlRegs.GPCMUX1.bit.GPIO77 = 3;  // XD2
-     GpioCtrlRegs.GPCMUX1.bit.GPIO78 = 3;  // XD1
-     GpioCtrlRegs.GPCMUX1.bit.GPIO79 = 3;  // XD0
-
-     GpioCtrlRegs.GPBMUX1.bit.GPIO40 = 3;  // XA0/XWE1n
-     GpioCtrlRegs.GPBMUX1.bit.GPIO41 = 3;  // XA1
-     GpioCtrlRegs.GPBMUX1.bit.GPIO42 = 3;  // XA2
-     GpioCtrlRegs.GPBMUX1.bit.GPIO43 = 3;  // XA3
-     GpioCtrlRegs.GPBMUX1.bit.GPIO44 = 3;  // XA4
-     GpioCtrlRegs.GPBMUX1.bit.GPIO45 = 3;  // XA5
-     GpioCtrlRegs.GPBMUX1.bit.GPIO46 = 3;  // XA6
-     GpioCtrlRegs.GPBMUX1.bit.GPIO47 = 3;  // XA7
-
-	 /*
-
-     GpioCtrlRegs.GPCMUX2.bit.GPIO80 = 3;  // XA8
-     GpioCtrlRegs.GPCMUX2.bit.GPIO81 = 3;  // XA9
-     GpioCtrlRegs.GPCMUX2.bit.GPIO82 = 3;  // XA10
-     GpioCtrlRegs.GPCMUX2.bit.GPIO83 = 3;  // XA11
-     GpioCtrlRegs.GPCMUX2.bit.GPIO84 = 3;  // XA12
-     GpioCtrlRegs.GPCMUX2.bit.GPIO85 = 3;  // XA13
-     GpioCtrlRegs.GPCMUX2.bit.GPIO86 = 3;  // XA14
-     GpioCtrlRegs.GPCMUX2.bit.GPIO87 = 3;  // XA15
-
-     GpioCtrlRegs.GPBMUX1.bit.GPIO39 = 3;  // XA16
-     GpioCtrlRegs.GPAMUX2.bit.GPIO31 = 3;  // XA17
-     GpioCtrlRegs.GPAMUX2.bit.GPIO30 = 3;  // XA18
-     GpioCtrlRegs.GPAMUX2.bit.GPIO29 = 3;  // XA19
-
-	 */
-
-     GpioCtrlRegs.GPBMUX1.bit.GPIO34 = 3;  // XREADY
-	 GpioCtrlRegs.GPBMUX1.bit.GPIO35 = 3;  // XRNW
-     GpioCtrlRegs.GPBMUX1.bit.GPIO38 = 3;  // XWE0
-
-     GpioCtrlRegs.GPBMUX1.bit.GPIO36 = 3;  // XZCS0
- //    GpioCtrlRegs.GPBMUX1.bit.GPIO37 = 3;  // XZCS7
- //    GpioCtrlRegs.GPAMUX2.bit.GPIO28 = 3;  // XZCS6
-
-
-
-	 
-	      
-     EDIS;
-}
-
 
 
 
 
 void Initial_ADC(void)
 {
-	EALLOW;
+    EALLOW;
 
-	
-	AdcRegs.ADCTRL3.all = 0x00E0;            // ADC power up
-	
-
-	delay(1000);                              //about  30 ms
-
+    AdcRegs.ADCTRL3.all = 0x00E0;            // ADC power up
+    
+    delay(1000);                              //about  30 ms
 
     AdcRegs.ADCTRL3.bit.ADCCLKPS = 1; // ADC CLOCK = HSPCLK / 6 = 12.5MHZ 
     AdcRegs.ADCTRL1.bit.CPS = 1;
 
     AdcRegs.ADCTRL1.bit.ACQ_PS = 6 ;
 
-	AdcRegs.ADCTRL2.bit.INT_ENA_SEQ1 = 0;
-	AdcRegs.ADCTRL2.bit.RST_SEQ1     = 1;
-	AdcRegs.ADCTRL2.bit.RST_SEQ2     = 1;      
+    AdcRegs.ADCTRL2.bit.INT_ENA_SEQ1 = 0;
+    AdcRegs.ADCTRL2.bit.RST_SEQ1     = 1;
+    AdcRegs.ADCTRL2.bit.RST_SEQ2     = 1;      
     
       
     AdcRegs.ADCTRL1.bit.SEQ_CASC = 1;        //º∂¡™ƒ£ Ω
     AdcRegs.ADCTRL3.bit.SMODE_SEL = 0;    //  sequencial  sampling mode
-	AdcRegs.ADCREFSEL.bit.REF_SEL = 0;    //  INNER-REF
+    AdcRegs.ADCREFSEL.bit.REF_SEL = 0;    //  INNER-REF
     AdcRegs.ADCMAXCONV.all = 0x0007;      //  16Õ®µ¿
 
+    //////////// setup sample sequence////////////
+    AdcRegs.ADCCHSELSEQ1.bit.CONV00 = 0x4;   // A4    SIN       R0
+    AdcRegs.ADCCHSELSEQ1.bit.CONV01 = 0x6;   // A6    COS       R1
 
-	//////////// setup sample sequence////////////
-	AdcRegs.ADCCHSELSEQ1.bit.CONV00 = 0x4;   // A4    SIN       R0
-	AdcRegs.ADCCHSELSEQ1.bit.CONV01 = 0x6;   // A6    COS       R1
-
-	AdcRegs.ADCCHSELSEQ1.bit.CONV02 = 0x0;   // A0    U_C      R2  
+    AdcRegs.ADCCHSELSEQ1.bit.CONV02 = 0x0;   // A0    U_C      R2  
     AdcRegs.ADCCHSELSEQ1.bit.CONV03 = 0x2;   // A2    V_C      R3 
 
-
-	AdcRegs.ADCCHSELSEQ2.bit.CONV04 = 0x8;   // B0    BUS_V      R4
-	AdcRegs.ADCCHSELSEQ2.bit.CONV05 = 0xA;   // B2    IPM_TEMP   R5
-	AdcRegs.ADCCHSELSEQ2.bit.CONV06 = 0xC;   // B4    ACOM_IN    R6 
+    AdcRegs.ADCCHSELSEQ2.bit.CONV04 = 0x8;   // B0    BUS_V      R4
+    AdcRegs.ADCCHSELSEQ2.bit.CONV05 = 0xA;   // B2    IPM_TEMP   R5
+    AdcRegs.ADCCHSELSEQ2.bit.CONV06 = 0xC;   // B4    ACOM_IN    R6 
     AdcRegs.ADCCHSELSEQ2.bit.CONV07 = 0xE;   // B6    MOTORTEMP  R7   
 
-
-
-
-	delay(1000);
-
+    delay(1000);
 
     AdcRegs.ADCTRL2.bit.INT_ENA_SEQ1 = 1; 
-	AdcRegs.ADCST.bit.INT_SEQ1_CLR   = 1;         
+    AdcRegs.ADCST.bit.INT_SEQ1_CLR   = 1;         
  
     AdcRegs.ADCTRL2.bit.EPWM_SOCA_SEQ1 = 0x1;   // enable SOC from EPWMA trigger
  
- 	EDIS;
- 	
- 	
- 	   	
+    EDIS;
 }
 
 
 
 void ResolverParaInit(void)
 {
-	float  kiTsBy2;
-	
-	rslvrIn.SAMPLING_TIME = 1.0 / 10000;
-	rslvrIn.TABLE_LENGTH  = 16;
-	rslvrIn.TUNING        = 0;
-	rslvrIn.FIR32         = 0;
-	rslvrIn.testAngle     = 0.0;
-	rslvrIn.rpsMax        = 200.0;    // max motor speed in freq
+    float  kiTsBy2;
+    
+    rslvrIn.SAMPLING_TIME = 1.0 / 10000;
+    rslvrIn.TABLE_LENGTH  = 16;
+    rslvrIn.TUNING        = 0;
+    rslvrIn.FIR32         = 0;
+    rslvrIn.testAngle     = 0.0;
+    rslvrIn.rpsMax        = 200.0;    // max motor speed in freq
     rslvrIn.firLag        = 3;        // fbk sine and cosine peaks occur when firLag = 3
 
-	offsetFc = 500.0 / TWO_PI;        // offset filter corner frequency (Hz)          500/2pi
-	errorFc  = 500.0;                // error filter corner frequency (Hz)           1000
+    offsetFc = 500.0 / TWO_PI;        // offset filter corner frequency (Hz)          500/2pi
+    errorFc  = 500.0;                // error filter corner frequency (Hz)           1000
     piconFz  = 200.0;                 // pi controller - ZERO frequency               200
     Kp = 1500.0;                      // pi controller - prop gain                    5000
 
-
     rslvrIn.errorWfT  =  errorFc  * TWO_PI * rslvrIn.SAMPLING_TIME;
 
-	kiTsBy2   =  Kp * (piconFz * TWO_PI) * rslvrIn.SAMPLING_TIME / 2.0;
-	rslvrIn.picon_K0  =  Kp + kiTsBy2;
-	rslvrIn.picon_K1  = -Kp + kiTsBy2;
+    kiTsBy2   =  Kp * (piconFz * TWO_PI) * rslvrIn.SAMPLING_TIME / 2.0;
+    rslvrIn.picon_K0  =  Kp + kiTsBy2;
+    rslvrIn.picon_K1  = -Kp + kiTsBy2;
 
-	init_resolver_Float();
-
-
+    init_resolver_Float();
 }
 
 

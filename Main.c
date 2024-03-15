@@ -1,17 +1,16 @@
 #include "head.h"
 
+
+
 void main(void)
-
 {
-	
-
 	InitSysCtrl();
     
     Initial_Gpio();
 
- 
 	Initial_INT();
 	
+	/* 加速运行 */
 	MemCopy(&RamfuncsLoadStart, &RamfuncsLoadEnd, &RamfuncsRunStart);
 
 	InitFlash();
@@ -36,6 +35,7 @@ void main(void)
 
 	FPGA_CHECK();
 
+	
 	ResolverParaInit();
 
 	driver_parameter();
@@ -46,21 +46,8 @@ void main(void)
 
 	EN_INT();
 
-
 	while(1)
 	{
-
-
-        
-
 		CAN_A_RX();
-
-
-
-		
-      
 	}
-
-
-
 }
